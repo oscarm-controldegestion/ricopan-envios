@@ -120,6 +120,14 @@
     .action-box{border:2px dashed #c0392b;border-radius:12px;padding:1.1rem;margin-top:1rem;background:#fff8f8}
     .action-box h3{font-size:.95rem;font-weight:700;color:#c0392b;margin-bottom:.65rem}
     .action-box textarea{width:100%;padding:.55rem;border:1.5px solid #f5c2c7;border-radius:8px;font-size:.85rem;resize:vertical;min-height:65px;outline:none;font-family:inherit}
+    .foto-btn{display:flex;align-items:center;gap:.45rem;margin-top:.55rem;cursor:pointer;background:#fff;border:1.5px dashed #aaa;border-radius:8px;padding:.45rem .75rem;font-size:.82rem;color:#555;width:100%;justify-content:center;transition:border-color .2s}
+    .foto-btn:hover{border-color:#c0392b;color:#c0392b}
+    .foto-btn input[type=file]{display:none}
+    .foto-preview{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-top:.55rem;display:none;border:1.5px solid #f5c2c7}
+    .tl-foto{margin-top:.45rem;max-width:220px;border-radius:8px;cursor:pointer;border:1px solid #ddd}
+    .foto-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
+    .foto-modal img{max-width:95vw;max-height:90vh;border-radius:10px}
+    .foto-modal.open{display:flex}
     .radio-opt{display:flex;align-items:center;gap:.45rem;margin-bottom:.4rem;cursor:pointer}
     .radio-opt input{width:15px;height:15px;cursor:pointer}
     .radio-opt label{font-size:.88rem;font-weight:600;cursor:pointer}
@@ -160,6 +168,11 @@
   </style>
 </head>
 <body>
+
+<!-- MODAL FOTO -->
+<div class="foto-modal" id="foto-modal" onclick="this.classList.remove('open')">
+  <img id="foto-modal-img" src="" alt="Foto evidencia">
+</div>
 
 <!-- LOADING -->
 <div id="loading-overlay">
@@ -631,6 +644,7 @@ function verEnvio(id) {
         <div class="tl-who">${t.userName||t.userId}</div>
         <div class="tl-when">${fmt(t.timestamp)}</div>
         ${t.note?`<div class="tl-note">${t.note}</div>`:''}
+        ${t.photo?`<img class="tl-foto" src="${t.photo}" alt="Foto evidencia" onclick="abrirFoto('${t.photo}')" title="Ver foto">`:''}
       </div>
     </div>`).join('');
 
@@ -642,6 +656,11 @@ function verEnvio(id) {
         <h3>✋ Confirmar Retiro en ${origen}</h3>
         <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que retiraste los productos:</p>
         <textarea id="act-nota" placeholder="Observación (opcional)..."></textarea>
+        <label class="foto-btn" id="foto-lbl" onclick="document.getElementById('act-foto').click()">
+          📷 Adjuntar foto (opcional)
+          <input type="file" id="act-foto" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
+        </label>
+        <img id="foto-preview" class="foto-preview" alt="Vista previa">
         <button class="btn btn-warning btn-full" style="margin-top:.6rem" onclick="accion('retiro','${id}')">✅ Confirmé el retiro</button>
       </div>`;
     } else if (e.status==='en_transito') {
@@ -649,6 +668,11 @@ function verEnvio(id) {
         <h3>🏠 Confirmar Entrega en ${destino}</h3>
         <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que entregaste los productos:</p>
         <textarea id="act-nota" placeholder="Observación (opcional)..."></textarea>
+        <label class="foto-btn" onclick="document.getElementById('act-foto').click()">
+          📷 Adjuntar foto (opcional)
+          <input type="file" id="act-foto" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
+        </label>
+        <img id="foto-preview" class="foto-preview" alt="Vista previa">
         <button class="btn btn-primary btn-full" style="margin-top:.6rem" onclick="accion('entrega','${id}')">✅ Confirmé la entrega</button>
       </div>`;
     }
@@ -661,6 +685,11 @@ function verEnvio(id) {
         <div class="radio-opt"><input type="radio" name="re" id="re-mal" value="reclamado"><label for="re-mal" style="color:#e74c3c">⚠️ Hay un problema</label></div>
       </div>
       <textarea id="act-nota" placeholder="Detalle de recepción o descripción del problema..."></textarea>
+      <label class="foto-btn" onclick="document.getElementById('act-foto').click()">
+        📷 Adjuntar foto evidencia (opcional)
+        <input type="file" id="act-foto" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
+      </label>
+      <img id="foto-preview" class="foto-preview" alt="Vista previa">
       <button class="btn btn-success btn-full" style="margin-top:.6rem" onclick="accion('recepcion','${id}')">✅ Confirmar Recepción</button>
     </div>`;
   }
@@ -699,11 +728,59 @@ function verEnvio(id) {
   goTo('detalle');
 }
 
+// ---- FOTO HELPERS ----
+function previsualizarFoto(input) {
+  const preview = document.getElementById('foto-preview');
+  const lbl = document.getElementById('foto-lbl') || input.closest('label');
+  if (!input.files?.length) { preview.style.display='none'; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    if (lbl) lbl.textContent = '✅ Foto adjuntada (toca para cambiar)';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function abrirFoto(src) {
+  const modal = document.getElementById('foto-modal');
+  document.getElementById('foto-modal-img').src = src;
+  modal.classList.add('open');
+}
+
+async function comprimirFoto(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 900;
+        let w = img.width, h = img.height;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 // ---- ACCIONES ----
 async function accion(tipo, id) {
-  const nota = document.getElementById('act-nota')?.value?.trim() || '';
-  const e    = DATA.envios[id];
+  const nota  = document.getElementById('act-nota')?.value?.trim() || '';
+  const fInp  = document.getElementById('act-foto');
+  const e     = DATA.envios[id];
   if (!e) return;
+
+  // Comprimir foto si la hay
+  let photoB64 = null;
+  if (fInp?.files?.length) {
+    try { photoB64 = await comprimirFoto(fInp.files[0]); } catch(_) {}
+  }
 
   const now = Date.now();
   let newStatus, tlNote;
@@ -719,9 +796,9 @@ async function accion(tipo, id) {
     tlNote = nota || (newStatus==='completado' ? 'Recepción confirmada' : 'Reclamo registrado');
   }
 
-  const timeline = [...(e.timeline||[]), {
-    action: tipo, userId: CU.id, userName: CU.name, timestamp: now, note: tlNote
-  }];
+  const tlEntry = { action: tipo, userId: CU.id, userName: CU.name, timestamp: now, note: tlNote };
+  if (photoB64) tlEntry.photo = photoB64;
+  const timeline = [...(e.timeline||[]), tlEntry];
 
   try {
     await DB.ref(`ricopan/envios/${id}`).update({ status:newStatus, timeline, [`${tipo}At`]:now });
