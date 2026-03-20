@@ -277,7 +277,12 @@ const DH	 = firebase.database();
 // ---- DATOS POI DERECTO ----
 const DEFAULT_USERS = {
   admin:           { pass:'admin123',  role:'admin',      name:'Administrador',       local:null },
-  genesis:         { pass:'1234',      role:'encargado',in:         { pass:'1234',      role:'conductor',  name:'Lorrain',             local:null },
+  genesis:         { pass:'1234',      role:'encargado',  name:'Genesis',             local:'gabriel' },
+  recep_larrain:   { pass:'1234',      role:'receptor',   name:'Recepción Larraín',   local:'larrain' },
+  recep_abuelo:    { pass:'1234',      role:'receptor',   name:'Recepción Abuelo',    local:'abuelo' },
+  recep_pasteleria:{ pass:'1234',      role:'receptor',   name:'Recepción Pastelería',local:'pasteleria' },
+  dilan:           { pass:'1234',      role:'conductor',  name:'Dilan',               local:null },
+  lorrain:         { pass:'1234',      role:'conductor',  name:'Lorrain',             local:null },
 };
 const DEFAULT_LOCALES = {
   gabriel:'Gabriel', larrain:'Larraín', abuelo:'Abuelo', pasteleria:'Pastelería', central:'Central'
