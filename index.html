@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Control de EnvÃ­os - Ricopan</title>
+  <title>Control de Envíos - Ricopan</title>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -38,7 +38,7 @@
     .header-icon{font-size:1.5rem}
     .header-title{font-size:1rem;font-weight:700}
     .header-right{display:flex;align-items:center;gap:.75rem}
-    .header-user{font-size:.78rem;opacity:.9;white-space:nowraw;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+    .header-user{font-size:.78rem;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
     #logout-btn{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;cursor:pointer}
 
     /* ---- LAYOUT ---- */
@@ -48,7 +48,7 @@
 
     /* ---- STATS ---- */
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
-  2 .stat{background:#fff;border-radius:10px;padding:.75rem;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .stat{background:#fff;border-radius:10px;padding:.75rem;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
     .stat b{display:block;font-size:1.6rem;font-weight:700;color:#c0392b}
     .stat span{font-size:.7rem;color:#888;text-transform:uppercase}
 
@@ -159,7 +159,7 @@
 
 <!-- LOADING -->
 <div id="loading-overlay">
-  <div class="spin">ð</div>
+  <div class="spin">🔄</div>
   <div style="font-size:1.1rem;font-weight:600">Conectando...</div>
   <div style="font-size:.82rem;opacity:.7;margin-top:.4rem">Cargando datos desde la nube</div>
 </div>
@@ -167,8 +167,8 @@
 <!-- LOGIN -->
 <div id="login-screen" style="display:none">
   <div class="login-card">
-    <div class="login-icon">ð</div>
-    <h1>Control de EnvÃ­os</h1>
+    <div class="login-icon">🍞</div>
+    <h1>Control de Envíos</h1>
     <p>Ricopan</p>
     <div class="error-msg" id="login-err"></div>
     <div class="form-group">
@@ -176,8 +176,8 @@
       <input type="text" id="u-user" placeholder="Ingrese usuario" autocomplete="off">
     </div>
     <div class="form-group">
-      <label>ContraseÃ±a</label>
-      <input type="password" id="u-pass" placeholder="Ingrese contraseÃ±a">
+      <label>Contraseña</label>
+      <input type="password" id="u-pass" placeholder="Ingrese contraseña">
     </div>
     <button class="btn-login" onclick="doLogin()">Ingresar</button>
   </div>
@@ -187,8 +187,8 @@
 <div id="app-screen">
   <header>
     <div class="header-left">
-      <span class="header-icon">ð</span>
-      <span class="header-title">Ricopan Â· EnvÃ­os</span>
+      <span class="header-icon">🍞</span>
+      <span class="header-title">Ricopan · Envíos</span>
     </div>
     <div class="header-right">
       <span class="header-user" id="hdr-user"></span>
@@ -204,9 +204,9 @@
 
     <!-- NUEVO ENVIO -->
     <div id="pg-nuevo" class="page">
-      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
+      <button class="back-btn" onclick="goTo('dashboard')">← Volver</button>
       <div class="card">
-        <div class="card-title" style="margin-bottom:1.2rem">ð¦ Nuevo EnvÃ­o</div>
+        <div class="card-title" style="margin-bottom:1.2rem">📦 Nuevo Envío</div>
         <div class="form-row">
           <div class="field">
             <label>Local Destino *</label>
@@ -218,7 +218,7 @@
           </div>
         </div>
         <div class="field">
-          <label>ObservaciÃ³n (opcional)</label>
+          <label>Observación (opcional)</label>
           <textarea id="n-nota" placeholder="Instrucciones o notas..."></textarea>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
@@ -226,20 +226,20 @@
           <button class="btn btn-outline btn-sm" onclick="addProdRow()">+ Agregar</button>
         </div>
         <div id="prods-list"></div>
-        <button class="btn btn-primary btn-full" style="margin-top:.75rem" onclick="crearEnvio()">âï¸ Crear EnvÃ­o</button>
+        <button class="btn btn-primary btn-full" style="margin-top:.75rem" onclick="crearEnvio()">✈️ Crear Envío</button>
       </div>
     </div>
 
     <!-- DETALLE ENVIO -->
     <div id="pg-detalle" class="page">
-      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
+      <button class="back-btn" onclick="goTo('dashboard')">← Volver</button>
       <div id="detalle-content"></div>
     </div>
 
     <!-- ADMIN -->
     <div id="pg-admin" class="page">
-      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
-      <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">âï¸ AdministraciÃ³n</div>
+      <button class="back-btn" onclick="goTo('dashboard')">← Volver</button>
+      <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">⚙️ Administración</div>
       <div class="tabs">
         <button class="tab-btn on" onclick="adminTab('usuarios',this)">Usuarios</button>
         <button class="tab-btn" onclick="adminTab('locales',this)">Locales</button>
@@ -272,24 +272,18 @@ const FIREBASE_CONFIG = {
 <script>
 // ---- INICIALIZAR FIREBASE ----
 firebase.initializeApp(FIREBASE_CONFIG);
-const DB = firebase.database();
+const DH	 = firebase.database();
 
-// ---- DATOS POR DEFECTO ----
+// ---- DATOS POI DERECTO ----
 const DEFAULT_USERS = {
   admin:           { pass:'admin123',  role:'admin',      name:'Administrador',       local:null },
-  genesis:         { pass:'1234',      role:'encargado',  name:'Genesis',             local:'gabriel' },
-  recep_larrain:   { pass:'1234',      role:'receptor',   name:'RecepciÃ³n LarraÃ­n',   local:'larrain' },
-  recep_abuelo:    { pass:'1234',      role:'receptor',   name:'RecepciÃ³n Abuelo',    local:'abuelo' },
-  recep_pasteleria:{ pass:'1234',      role:'receptor',   name:'RecepciÃ³n PastelerÃ­a',local:'pasteleria' },
-  dilan:           { pass:'1234',      role:'conductor',  name:'Dilan',               local:null },
-  lorrain:         { pass:'1234',      role:'conductor',  name:'Lorrain',             local:null },
+  genesis:         { pass:'1234',      role:'encargado',in:         { pass:'1234',      role:'conductor',  name:'Lorrain',             local:null },
 };
 const DEFAULT_LOCALES = {
-  gabriel:'Gabriel', larrain:'LarraÃ­n', abuelo:'Abuelo', pasteleria:'PastelerÃ­a', central:'Central'
+  gabriel:'Gabriel', larrain:'Larraín', abuelo:'Abuelo', pasteleria:'Pastelería', central:'Central'
 };
 const DEFAULT_PRODUCTOS = [
-  'Pino','Mechada','Chapa Trad','Chapa Napo',
-  'Empa Napo','Empa Mechada','Empa Pollo','Pan','Torta','Otro'
+  'Pino','Mechada','Chapa Trad','Chapa Napo','Empa Napo','Empa Mechada','Empa Pollo','Pan','Torta','Otro'
 ];
 
 // ---- ESTADO ----
@@ -300,7 +294,7 @@ let currentEnvioId = null;
 let listenersActive = false;
 
 // ---- HELPERS ----
-const roleLabel = r => ({admin:'Admin',encargado:'EnvÃ­o',conductor:'Conductor',receptor:'RecepciÃ³n'}[r]||r);
+const roleLabel = r => ({admin:'Admin',encargado:'Envío',conductor:'Conductor',receptor:'Recepción'}[r]||r);
 const fmt = ts => new Date(ts).toLocaleString('es-CL');
 const fmtDate = ts => new Date(ts).toLocaleDateString('es-CL');
 const fmtTime = ts => new Date(ts).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
@@ -347,13 +341,13 @@ window.addEventListener('load', async () => {
   }
   overlay.style.display = 'none';
 
-  // Restaurar sesiÃ³n
+  // Restaurar sesión
   const saved = sessionStorage.getItem('ricopan_cu');
   if (saved) {
     CU = JSON.parse(saved);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
-    document.getElementById('hdr-user').textContent = CU.name + ' Â· ' + roleLabel(CU.role);
+    document.getElementById('hdr-user').textContent = CU.name + ' · ' + roleLabel(CU.role);
     goTo('dashboard');
   } else {
     document.getElementById('login-screen').style.display = 'flex';
@@ -373,10 +367,10 @@ function doLogin() {
     err.style.display = 'none';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
-    document.getElementById('hdr-user').textContent = CU.name + ' Â· ' + roleLabel(CU.role);
+    document.getElementById('hdr-user').textContent = CU.name + ' · ' + roleLabel(CU.role);
     goTo('dashboard');
   } else {
-    err.textContent = 'Usuario o contraseÃ±a incorrectos';
+    err.textContent = 'Usuario o contraseña incorrectos';
     err.style.display = 'block';
   }
 }
@@ -409,11 +403,11 @@ function goTo(page) {
 // ---- STATUS ----
 function badge(status) {
   const map = {
-    pendiente_retiro:'<span class="badge b-pendiente">â³ Pend. retiro</span>',
-    en_transito:     '<span class="badge b-transito">ð En trÃ¡nsito</span>',
-    entregado:       '<span class="badge b-entregado">ð¦ Entregado</span>',
-    completado:      '<span class="badge b-completado">â Completado</span>',
-    reclamado:       '<span class="badge b-reclamado">â ï¸ Reclamado</span>',
+    pendiente_retiro:'<span class="badge b-pendiente">⏳ Pend. retiro</span>',
+    en_transito:     '<span class="badge b-transito">🚚 En tránsito</span>',
+    entregado:       '<span class="badge b-entregado">📦 Entregado</span>',
+    completado:      '<span class="badge b-completado">✅ Completado</span>',
+    reclamado:       '<span class="badge b-reclamado">⚠️ Reclamado</span>',
   };
   return map[status]||`<span class="badge">${status}</span>`;
 }
@@ -430,8 +424,8 @@ function envioCard(id, e) {
   <div class="envio-item" onclick="verEnvio('${id}')">
     <div class="envio-head">
       <div>
-        <div class="envio-ruta">${origen} â ${destino}</div>
-        <div class="envio-sub">${fmtDate(e.createdAt)} ${fmtTime(e.createdAt)} Â· ${driver?.name||'?'} Â· ${total} unid.</div>
+        <div class="envio-ruta">${origen} → ${destino}</div>
+        <div class="envio-sub">${fmtDate(e.createdAt)} ${fmtTime(e.createdAt)} · ${driver?.name||'?'} · ${total} unid.</div>
         <div class="envio-sub">#${id.slice(-5).toUpperCase()}</div>
       </div>
       ${badge(e.status)}
@@ -459,20 +453,20 @@ function dashEncargado(envios) {
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
     <div>
-      <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Mis EnvÃ­os</div>
+      <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Mis Envíos</div>
       <div style="font-size:.78rem;color:#888">Local: ${DATA.locales[CU.local]||CU.local}</div>
     </div>
-    <button class="btn btn-primary" onclick="goTo('nuevo')">+ Nuevo EnvÃ­o</button>
+    <button class="btn btn-primary" onclick="goTo('nuevo')">+ Nuevo Envío</button>
   </div>
   <div class="stats">
     <div class="stat"><b>${c('pendiente_retiro')}</b><span>Pend. retiro</span></div>
-    <div class="stat"><b>${c('en_transito')}</b><span>En trÃ¡nsito</span></div>
+    <div class="stat"><b>${c('en_transito')}</b><span>En tránsito</span></div>
     <div class="stat"><b>${c('completado')}</b><span>Completados</span></div>
     <div class="stat"><b style="color:#e74c3c">${c('reclamado')}</b><span>Reclamados</span></div>
   </div>
   <div class="card">
-    <div class="card-head"><span class="card-title">EnvÃ­os activos</span></div>
-    ${act.length ? act.map(([id,e])=>envioCard(id,e)).join('') : '<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os activos</p></div>'}
+    <div class="card-head"><span class="card-title">Envíos activos</span></div>
+    ${act.length ? act.map(([id,e])=>envioCard(id,e)).join('') : '<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos activos</p></div>'}
   </div>
   ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
 }
@@ -483,15 +477,15 @@ function dashConductor(envios) {
   const transito  = mine.filter(([,e])=>e.status==='en_transito');
   const hist      = mine.filter(([,e])=>['completado','entregado','reclamado'].includes(e.status)).slice(0,10);
   return `
-  <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">ð Panel Conductor</div>
+  <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">🚚 Panel Conductor</div>
   <div class="stats" style="grid-template-columns:repeat(3,1fr)">
     <div class="stat"><b style="color:#f39c12">${retirar.length}</b><span>Por retirar</span></div>
-    <div class="stat"><b style="color:#3498db">${transito.length}</b><span>En trÃ¡nsito</span></div>
+    <div class="stat"><b style="color:#3498db">${transito.length}</b><span>En tránsito</span></div>
     <div class="stat"><b>${mine.filter(([,e])=>e.status==='completado').length}</b><span>Completados</span></div>
   </div>
-  ${retirar.length ? `<div class="card"><div class="card-head"><span class="card-title">â³ Por retirar</span></div>${retirar.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${transito.length ? `<div class="card"><div class="card-head"><span class="card-title">ð En trÃ¡nsito</span></div>${transito.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${!retirar.length&&!transito.length ? '<div class="alert alert-ok">â Sin envÃ­os pendientes. Â¡Todo al dÃ­a!</div>' : ''}
+  ${retirar.length ? `<div class="card"><div class="card-head"><span class="card-title">⏳ Por retirar</span></div>${retirar.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${transito.length ? `<div class="card"><div class="card-head"><span class="card-title">🚚 En tránsito</span></div>${transito.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${!retirar.length&&!transito.length ? '<div class="alert alert-ok">✅ Sin envíos pendientes. ¡Todo al día!</div>' : ''}
   ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
 }
 
@@ -502,7 +496,7 @@ function dashReceptor(envios) {
   const hist   = mine.filter(([,e])=>['completado','reclamado'].includes(e.status)).slice(0,15);
   return `
   <div>
-    <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">ð¥ RecepciÃ³n</div>
+    <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">📥 Recepción</div>
     <div style="font-size:.78rem;color:#888;margin-bottom:.85rem">Local: ${DATA.locales[CU.local]||CU.local}</div>
   </div>
   <div class="stats" style="grid-template-columns:repeat(3,1fr)">
@@ -510,9 +504,9 @@ function dashReceptor(envios) {
     <div class="stat"><b style="color:#3498db">${camino.length}</b><span>En camino</span></div>
     <div class="stat"><b>${mine.filter(([,e])=>e.status==='completado').length}</b><span>Recibidos</span></div>
   </div>
-  ${conf.length ? `<div class="alert alert-warn">ð¦ ${conf.length} envÃ­o(s) esperando tu confirmaciÃ³n</div><div class="card"><div class="card-head"><span class="card-title">ð¦ Por confirmar</span></div>${conf.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${camino.length ? `<div class="card"><div class="card-head"><span class="card-title">ð En camino</span></div>${camino.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${!conf.length&&!camino.length ? '<div class="alert alert-ok">â Sin envÃ­os pendientes</div>' : ''}
+  ${conf.length ? `<div class="alert alert-warn">📦 ${conf.length} envío(s) esperando tu confirmación</div><div class="card"><div class="card-head"><span class="card-title">📦 Por confirmar</span></div>${conf.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${camino.length ? `<div class="card"><div class="card-head"><span class="card-title">🚚 En camino</span></div>${camino.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${!conf.length&&!camino.length ? '<div class="alert alert-ok">✅ Sin envíos pendientes</div>' : ''}
   ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
 }
 
@@ -522,7 +516,7 @@ function dashAdmin(envios) {
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
     <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Panel Admin</div>
-    <button class="btn btn-outline btn-sm" onclick="goTo('admin')">âï¸ Config</button>
+    <button class="btn btn-outline btn-sm" onclick="goTo('admin')">⚙️ Config</button>
   </div>
   <div class="stats">
     <div class="stat"><b>${envios.length}</b><span>Total</span></div>
@@ -530,10 +524,10 @@ function dashAdmin(envios) {
     <div class="stat"><b>${envios.filter(([,e])=>e.status==='completado').length}</b><span>Completados</span></div>
     <div class="stat"><b style="color:#e74c3c">${recl.length}</b><span>Reclamados</span></div>
   </div>
-  ${recl.length ? `<div class="alert alert-err">â ï¸ ${recl.length} envÃ­o(s) con reclamos</div><div class="card"><div class="card-head"><span class="card-title">â ï¸ Reclamados</span></div>${recl.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${recl.length ? `<div class="alert alert-err">⚠️ ${recl.length} envío(s) con reclamos</div><div class="card"><div class="card-head"><span class="card-title">⚠️ Reclamados</span></div>${recl.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
   <div class="card">
-    <div class="card-head"><span class="card-title">Todos los envÃ­os recientes</span></div>
-    ${envios.slice(0,30).map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os registrados</p></div>'}
+    <div class="card-head"><span class="card-title">Todos los envíos recientes</span></div>
+    ${envios.slice(0,30).map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos registrados</p></div>'}
   </div>`;
 }
 
@@ -569,7 +563,7 @@ function addProdRow() {
   div.innerHTML = `
     <select id="pn-${id}"><option value="">Producto...</option>${opts}</select>
     <input type="number" id="pq-${id}" placeholder="Cantidad" min="1">
-    <button class="btn-del" onclick="document.getElementById('pr-${id}').remove()">â</button>`;
+    <button class="btn-del" onclick="document.getElementById('pr-${id}').remove()">✕</button>`;
   document.getElementById('prods-list').appendChild(div);
 }
 
@@ -594,12 +588,12 @@ async function crearEnvio() {
     senderLocal: CU.local, senderUserId: CU.id, senderUserName: CU.name,
     destinoLocal: destino, driverId: conductor,
     products, nota, status:'pendiente_retiro', createdAt: now,
-    timeline:[{ action:'creado', userId:CU.id, userName:CU.name, timestamp:now, note:`EnvÃ­o creado por ${CU.name}` }]
+    timeline:[{ action:'creado', userId:CU.id, userName:CU.name, timestamp:now, note:`Envío creado por ${CU.name}` }]
   };
 
   try {
     await DB.ref('ricopan/envios').push(envio);
-    alert('â EnvÃ­o creado exitosamente');
+    alert('✅ Envío creado exitosamente');
     goTo('dashboard');
   } catch(e) { alert('Error: '+e.message); }
 }
@@ -627,39 +621,31 @@ function verEnvio(id) {
       </div>
     </div>`).join('');
 
-  // BotÃ³n de acciÃ³n segÃºn rol y estado
+  // Botón de acción según rol y estado
   let actionHTML = '';
   if (CU.role==='conductor' && CU.id===e.driverId) {
     if (e.status==='pendiente_retiro') {
       actionHTML = `<div class="action-box">
-        <h3>â Confirmar Retiro en ${origen}</h3>
+        <h3>✋ Confirmar Retiro en ${origen}</h3>
         <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que retiraste los productos:</p>
-        <textarea id="act-nota" placeholder="ObservaciÃ³n (opcional)..."></textarea>
-        <button class="btn btn-warning btn-full" style="margin-top:.6rem" onclick="accion('retiro','${id}')">â ConfirmÃ© el retiro</button>
+        <textarea id="act-nota" placeholder="Observación (opcional)..."></textarea>
+        <button class="btn btn-warning btn-full" style="margin-top:.6rem" onclick="accion('retiro','${id}')">✅ Confirmé el retiro</button>
       </div>`;
     } else if (e.status==='en_transito') {
       actionHTML = `<div class="action-box">
-        <h3>ð  Confirmar Entrega en ${destino}</h3>
+        <h3>🏠 Confirmar Entrega en ${destino}</h3>
         <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que entregaste los productos:</p>
-        <textarea id="act-nota" placeholder="ObservaciÃ³n (opcional)..."></textarea>
-        <button class="btn btn-primary btn-full" style="margin-top:.6rem" onclick="accion('entrega','${id}')">â ConfirmÃ© la entrega</button>
+        <textarea id="act-nota" placeholder="Observación (opcional)..."></textarea>
+        <button class="btn btn-primary btn-full" style="margin-top:.6rem" onclick="accion('entrega','${id}')">✅ Confirmé la entrega</button>
       </div>`;
     }
   }
-  if (CU.role==='receptor' && CU.local===e.destinoLocal && e.status==='entregado') {
-    actionHTML = `<div class="action-box">
-      <h3>ð Confirmar RecepciÃ³n</h3>
-      <div style="margin-bottom:.65rem">
-        <div class="radio-opt"><input type="radio" name="re" id="re-ok" value="completado" checked><label for="re-ok" style="color:#27ae60">â Todo correcto</label></div>
-        <div class="radio-opt"><input type="radio" name="re" id="re-mal" value="reclamado"><label for="re-mal" style="color:#e74c3c">â ï¸ Hay un problema</label></div>
-      </div>
-      <textarea id="act-nota" placeholder="Detalle de recepciÃ³n o descripciÃ³n del problema..."></textarea>
-      <button class="btn btn-success btn-full" style="margin-top:.6rem" onclick="accion('recepcion','${id}')">â Confirmar RecepciÃ³n</button>
+  if (CU.role==='receptor' && CU.local===e.destinoLocal && e.status==='entregado')ón</button>
     </div>`;
   }
   if (CU.role==='admin') {
     actionHTML += `<div style="margin-top:.75rem">
-      <button class="btn btn-danger btn-sm" onclick="eliminarEnvio('${id}')">ðï¸ Eliminar envÃ­o</button>
+      <button class="btn btn-danger btn-sm" onclick="eliminarEnvio('${id}')">🗑️ Eliminar envío</button>
     </div>`;
   }
 
@@ -667,8 +653,8 @@ function verEnvio(id) {
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem">
       <div>
-        <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e">${origen} â ${destino}</div>
-        <div style="font-size:.75rem;color:#888">Creado: ${fmt(e.createdAt)} Â· #${id.slice(-6).toUpperCase()}</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e">${origen} → ${destino}</div>
+        <div style="font-size:.75rem;color:#888">Creado: ${fmt(e.createdAt)} · #${id.slice(-6).toUpperCase()}</div>
       </div>
       ${badge(e.status)}
     </div>
@@ -676,7 +662,7 @@ function verEnvio(id) {
       <div><div style="font-size:.75rem;color:#888">Conductor</div><div style="font-weight:700">${driver?.name||e.driverId}</div></div>
       <div><div style="font-size:.75rem;color:#888">Enviado por</div><div style="font-weight:700">${e.senderUserName||e.senderUserId}</div></div>
     </div>
-    ${e.nota?`<div class="alert alert-info" style="margin-bottom:.85rem">ð ${e.nota}</div>`:''}
+    ${e.nota?`<div class="alert alert-info" style="margin-bottom:.85rem">📝 ${e.nota}</div>`:''}
     <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.55rem;text-transform:uppercase">Productos</div>
     <table class="prod-table">
       <thead><tr><th>Producto</th><th>Cantidad</th></tr></thead>
@@ -686,7 +672,7 @@ function verEnvio(id) {
     ${actionHTML}
   </div>
   <div class="card">
-    <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.75rem;text-transform:uppercase">ð Historial</div>
+    <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.75rem;text-transform:uppercase">📋 Historial</div>
     ${tlHTML||'<p style="color:#aaa;font-size:.85rem">Sin historial</p>'}
   </div>`;
   goTo('detalle');
@@ -703,13 +689,13 @@ async function accion(tipo, id) {
 
   if (tipo==='retiro') {
     newStatus = 'en_transito';
-    tlNote = nota || 'Conductor confirmÃ³ el retiro';
+    tlNote = nota || 'Conductor confirmó el retiro';
   } else if (tipo==='entrega') {
     newStatus = 'entregado';
-    tlNote = nota || 'Conductor confirmÃ³ la entrega';
+    tlNote = nota || 'Conductor confirmó la entrega';
   } else if (tipo==='recepcion') {
     newStatus = document.querySelector('input[name="re"]:checked')?.value || 'completado';
-    tlNote = nota || (newStatus==='completado' ? 'RecepciÃ³n confirmada' : 'Reclamo registrado');
+    tlNote = nota || (newStatus==='completado' ? 'Recepción confirmada' : 'Reclamo registrado');
   }
 
   const timeline = [...(e.timeline||[]), {
@@ -723,7 +709,7 @@ async function accion(tipo, id) {
 }
 
 async function eliminarEnvio(id) {
-  if (!confirm('Â¿Eliminar este envÃ­o? No se puede deshacer.')) return;
+  if (!confirm('¿Eliminar este envío? No se puede deshacer.')) return;
   await DB.ref(`ricopan/envios/${id}`).remove();
   goTo('dashboard');
 }
@@ -751,11 +737,11 @@ function adminTab(tab, el) {
         <div class="form-row" style="gap:.5rem">
           <div class="field"><label>Nombre</label><input id="nu-n" placeholder="Nombre completo"></div>
           <div class="field"><label>Usuario (login)</label><input id="nu-u" placeholder="sin espacios"></div>
-          <div class="field"><label>ContraseÃ±a</label><input id="nu-p" placeholder="ContraseÃ±a"></div>
+          <div class="field"><label>Contraseña</label><input id="nu-p" placeholder="Contraseña"></div>
           <div class="field"><label>Rol</label>
             <select id="nu-r" onchange="document.getElementById('nu-l-w').style.display=(['encargado','receptor'].includes(this.value)?'':'none')">
               <option value="">Selecciona...</option>
-              <option value="encargado">Encargado EnvÃ­o</option>
+              <option value="encargado">Encargado Envío</option>
               <option value="conductor">Conductor</option>
               <option value="receptor">Receptor</option>
               <option value="admin">Admin</option>
@@ -770,7 +756,7 @@ function adminTab(tab, el) {
           <button class="btn btn-outline" onclick="document.getElementById('new-u').style.display='none'">Cancelar</button>
         </div>
       </div>
-      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>ContraseÃ±a</th></tr></thead>
+      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>Contraseña</th></tr></thead>
       <tbody>${rows}</tbody></table>
     </div>`;
 
@@ -797,10 +783,10 @@ function adminTab(tab, el) {
   } else if (tab==='historial') {
     const all = Object.entries(DATA.envios).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
     c.innerHTML = `<div class="card">
-      <div class="card-head"><span class="card-title">Historial completo (${all.length} envÃ­os)</span>
-        <button class="btn btn-danger btn-sm" onclick="limpiarCompletados()">ðï¸ Limpiar completados</button>
+      <div class="card-head"><span class="card-title">Historial completo (${all.length} envíos)</span>
+        <button class="btn btn-danger btn-sm" onclick="limpiarCompletados()">🗑️ Limpiar completados</button>
       </div>
-      ${all.map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os</p></div>'}
+      ${all.map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos</p></div>'}
     </div>`;
   }
 }
@@ -815,7 +801,7 @@ async function saveUser() {
   if (!n||!u||!p||!r) { alert('Completa todos los campos'); return; }
   if (DATA.users[u]) { alert('Ese usuario ya existe'); return; }
   await DB.ref(`ricopan/users/${u}`).set({ name:n, pass:p, role:r, local:l||null });
-  alert('â Usuario creado');
+  alert('✅ Usuario creado');
   adminTab('usuarios', document.querySelector('.tab-btn.on'));
 }
 async function addLocal() {
@@ -826,7 +812,32 @@ async function addLocal() {
   adminTab('locales', document.querySelector('.tab-btn.on'));
 }
 async function delLocal(id) {
-  if (!confirm(`Â¿Eliminar local "${DATA.locales[id]}"?`)) return;
+  if (!confirm(`¿Eliminar local "${DATA.locales[id]}"?`)) return;
+  await DB.ref(`ricopan/locales/${id}`).remove();
+}
+async function addProducto() {
+  const n = prompt('Nombre del producto:');
+  if (!n?.trim()) return;
+  const p = [...(DATA.productos||[]), n.trim()];alue.trim().toLowerCase().replace(/\s+/g,'_');
+  const p = document.getElementById('nu-p').value.trim();
+  const r = document.getElementById('nu-r').value;
+  const lw= document.getElementById('nu-l-w').style.display;
+  const l = (lw!=='none') ? document.getElementById('nu-l').value : null;
+  if (!n||!u||!p||!r) { alert('Completa todos los campos'); return; }
+  if (DATA.users[u]) { alert('Ese usuario ya existe'); return; }
+  await DB.ref(`ricopan/users/${u}`).set({ name:n, pass:p, role:r, local:l||null });
+  alert('✅ Usuario creado');
+  adminTab('usuarios', document.querySelector('.tab-btn.on'));
+}
+async function addLocal() {
+  const n = prompt('Nombre del local:');
+  if (!n?.trim()) return;
+  const id = n.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  await DB.ref(`ricopan/locales/${id}`).set(n.trim());
+  adminTab('locales', document.querySelector('.tab-btn.on'));
+}
+async function delLocal(id) {
+  if (!confirm(`¿Eliminar local "${DATA.locales[id]}"?`)) return;
   await DB.ref(`ricopan/locales/${id}`).remove();
 }
 async function addProducto() {
@@ -843,7 +854,7 @@ async function delProducto(i) {
   adminTab('productos', document.querySelector('.tab-btn.on'));
 }
 async function limpiarCompletados() {
-  if (!confirm('Â¿Eliminar todos los envÃ­os completados?')) return;
+  if (!confirm('¿Eliminar todos los envíos completados?')) return;
   const updates = {};
   Object.entries(DATA.envios).forEach(([id,e]) => {
     if (e.status==='completado') updates[`ricopan/envios/${id}`] = null;
