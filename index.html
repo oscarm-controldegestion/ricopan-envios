@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Control de EnvÃ­os - Ricopan</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- jsPDF para exportar -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{font-family:-apple-system,sans-serif;background:#f0f2f5;color:#111;min-height:100vh}
+
+    /* ---- LOGIN ---- */
+    #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 50%,#16213e 50%,#0f3460 100%)}
+    .login-card{background:#fff;padding:2.5rem 2rem;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:360px;text-align:center}
+    .login-icon{width:80px;height:80px;background:linear-gradient(135deg,#c0392b,#922b21);border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:2.2rem}
+    .login-card h1{font-size:1.5rem;color:#1a1a2e;margin-bottom:.25rem}
+    .login-card p{color:#888;font-size:.9rem;margin-bottom:1.5rem}
+    .form-group{text-align:left;margin-bottom:1rem}
+    .form-group label{display:block;font-size:.82rem;font-weight:600;color:#555;margin-bottom:.35rem}
+    .form-group input{width:100%;padding:.7rem 1rem;border:2px solid #e0e0e0;border-radius:8px;font-size:.95rem;outline:none;transition:border-color .2s}
+    .form-group input:focus{border-color:#c0392b}
+    .btn-login{width:100%;padding:.85rem;background:linear-gradient(135deg,#c0392b,#922b21);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer}
+    .error-msg{background:#fee;color:#c00;padding:.5rem 1rem;border-radius:6px;font-size:.82rem;margin-bottom:1rem;border:1px solid #fcc;display:none}
+
+    /* ---- HEADER ---- */
+    #app-screen{display:none}
+    header{background:linear-gradient(135deg,#c0392b,#922b21);color:#fff;padding:.7rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+    .header-left{display:flex;align-items:center;gap:.6rem}
+    .header-icon{font-size:1.5rem}
+    .header-title{font-size:1rem;font-weight:700}
+    .header-right{display:flex;align-items:center;gap:.75rem}
+    .header-user{font-size:.78rem;opacity:.9;white-space:nowraw;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+    #logout-btn{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;cursor:pointer}
+
+    /* ---- LAYOUT ---- */
+    .content{max-width:860px;margin:0 auto;padding:1rem}
+    .page{display:none}
+    .page.on{display:block}
+
+    /* ---- STATS ---- */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+  2 .stat{background:#fff;border-radius:10px;padding:.75rem;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .stat b{display:block;font-size:1.6rem;font-weight:700;color:#c0392b}
+    .stat span{font-size:.7rem;color:#888;text-transform:uppercase}
+
+    /* ---- CARDS ---- */
+    .card{background:#fff;border-radius:12px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+    .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .card-title{font-size:1rem;font-weight:700;color:#1a1a2e}
+
+    /* ---- ENVIO ITEM ---- */
+    .envio-item{border:1px solid #eee;border-radius:10px;padding:.9rem;margin-bottom:.6rem;cursor:pointer;transition:box-shadow .2s,border-color .2s}
+    .envio-item:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);border-color:#c0392b}
+    .envio-ruta{font-weight:700;font-size:.95rem;color:#1a1a2e}
+    .envio-sub{font-size:.78rem;color:#888;margin-top:.2rem}
+    .envio-head{display:flex;justify-content:space-between;align-items:flex-start}
+
+    /* ---- BADGES ---- */
+    .badge{display:inline-block;padding:.2rem .55rem;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+    .b-pendiente{background:#fff3cd;color:#856404}
+    .b-transito{background:#cfe2ff;color:#084298}
+    .b-entregado{background:#e2d9f3;color:#4a0d9e}
+    .b-completado{background:#d1e7dd;color:#0a3622}
+    .b-reclamado{background:#f8d7da;color:#842029}
+
+    /* ---- BOTONES ---- */
+    .btn{padding:.5rem 1rem;border:none;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s}
+    .btn-primary{background:linear-gradient(135deg,#c0392b,#922b21);color:#fff}
+    .btn-primary:hover{opacity:.9}
+    .btn-success{background:#27ae60;color:#fff}
+    .btn-warning{background:#f39c12;color:#fff}
+    .btn-danger{background:#e74c3c;color:#fff}
+    .btn-outline{background:#fff;color:#c0392b;border:2px solid #c0392b}
+    .btn-sm{padding:.3rem .65rem;font-size:.78rem}
+    .btn-full{width:100%;padding:.85rem;font-size:.95rem}
+    .back-btn{background:none;border:none;color:#c0392b;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:.75rem;padding:0;display:flex;align-items:center;gap:.3rem}
+
+    /* ---- FORMULARIO ---- */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .field{margin-bottom:.9rem}
+    .field label{display:block;font-size:.82rem;font-weight:600;color:#555;margin-bottom:.3rem}
+    .field input,.field select,.field textarea{width:100%;padding:.6rem .85rem;border:2px solid #e0e0e0;border-radius:8px;font-size:.88rem;outline:none;font-family:inherit;transition:border-color .2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#c0392b}
+    .field textarea{resize:vertical;min-height:60px}
+
+    /* ---- PRODUCTOS EN FORMULARIO ---- */
+    .prod-row{display:grid;grid-template-columns:1fr 90px 36px;gap:.4rem;margin-bottom:.4rem;align-items:center}
+    .prod-row select,.prod-row input{padding:.45rem .7rem;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;outline:none}
+    .prod-row select:focus,.prod-row input:focus{border-color:#c0392b}
+    .btn-del{width:36px;height:36px;background:#fee;color:#c00;border:none;border-radius:8px;cursor:pointer;font-size:1rem}
+
+    /* ---- TABLA PRODUCTOS ---- */
+    .prod-table{width:100%;border-collapse:collapse;font-size:.88rem}
+    .prod-table th,.prod-table td{padding:.45rem .65rem;text-align:left;border-bottom:1px solid #eee}
+    .prod-table th{background:#f8f9fa;font-weight:700;color:#555}
+    .prod-table td:last-child,.prod-table th:last-child{text-align:right}
+    .prod-table tfoot td{font-weight:700;background:#f8f9fa}
+
+    /* ---- TIMELINE ---- */
+    .timeline-item{display:flex;gap:.65rem;margin-bottom:.85rem}
+    .tl-dot{width:10px;height:10px;border-radius:50%;background:#c0392b;margin-top:4px;flex-shrink:0}
+    .tl-who{font-size:.82rem;font-weight:700;color:#1a1a2e}
+    .tl-when{font-size:.72rem;color:#888}
+    .tl-note{font-size:.8rem;color:#555;margin-top:.1rem}
+
+    /* ---- ACCION BOX ---- */
+    .action-box{border:2px dashed #c0392b;border-radius:12px;padding:1.1rem;margin-top:1rem;background:#fff8f8}
+    .action-box h3{font-size:.95rem;font-weight:700;color:#c0392b;margin-bottom:.65rem}
+    .action-box textarea{width:100%;padding:.55rem;border:1.5px solid #f5c2c7;border-radius:8px;font-size:.85rem;resize:vertical;min-height:65px;outline:none;font-family:inherit}
+    .radio-opt{display:flex;align-items:center;gap:.45rem;margin-bottom:.4rem;cursor:pointer}
+    .radio-opt input{width:15px;height:15px;cursor:pointer}
+    .radio-opt label{font-size:.88rem;font-weight:600;cursor:pointer}
+
+    /* ---- ALERTAS ---- */
+    .alert{padding:.7rem .9rem;border-radius:8px;font-size:.85rem;margin-bottom:.85rem}
+    .alert-info{background:#cfe2ff;color:#084298;border:1px solid #b6d4fe}
+    .alert-warn{background:#fff3cd;color:#664d03;border:1px solid #ffe69c}
+    .alert-ok{background:#d1e7dd;color:#0a3622;border:1px solid #a3cfbb}
+    .alert-err{background:#f8d7da;color:#842029;border:1px solid #f5c2c7}
+
+    /* ---- TABS ADMIN ---- */
+    .tabs{display:flex;border-bottom:2px solid #eee;margin-bottom:1rem}
+    .tab-btn{padding:.55rem 1.1rem;background:none;border:none;font-size:.88rem;font-weight:600;color:#888;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+    .tab-btn.on{color:#c0392b;border-bottom-color:#c0392b}
+
+    /* ---- TABLAS ADMIN ---- */
+    .adm-table{width:100%;border-collapse:collapse;font-size:.82rem}
+    .adm-table th,.adm-table td{padding:.45rem .65rem;text-align:left;border-bottom:1px solid #f0f0f0}
+    .adm-table th{background:#f8f9fa;font-weight:700;color:#555}
+    .adm-form{background:#f8f9fa;border-radius:8px;padding:1rem;margin-bottom:1rem}
+
+    /* ---- EMPTY STATE ---- */
+    .empty{text-align:center;padding:2.5rem 1rem;color:#aaa}
+    .empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+
+    /* ---- LOADING ---- */
+    #loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:sans-serif}
+    .spin{font-size:2.5rem;animation:spin 1s linear infinite;margin-bottom:.75rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ---- RESPONSIVE ---- */
+    @media(max-width:560px){
+      .form-row{grid-template-columns:1fr}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .header-user{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="spin">ð</div>
+  <div style="font-size:1.1rem;font-weight:600">Conectando...</div>
+  <div style="font-size:.82rem;opacity:.7;margin-top:.4rem">Cargando datos desde la nube</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
+  <div class="login-card">
+    <div class="login-icon">ð</div>
+    <h1>Control de EnvÃ­os</h1>
+    <p>Ricopan</p>
+    <div class="error-msg" id="login-err"></div>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="u-user" placeholder="Ingrese usuario" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>ContraseÃ±a</label>
+      <input type="password" id="u-pass" placeholder="Ingrese contraseÃ±a">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <header>
+    <div class="header-left">
+      <span class="header-icon">ð</span>
+      <span class="header-title">Ricopan Â· EnvÃ­os</span>
+    </div>
+    <div class="header-right">
+      <span class="header-user" id="hdr-user"></span>
+      <button id="logout-btn" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- DASHBOARD -->
+    <div id="pg-dashboard" class="page on">
+      <div id="dashboard-content"></div>
+    </div>
+
+    <!-- NUEVO ENVIO -->
+    <div id="pg-nuevo" class="page">
+      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1.2rem">ð¦ Nuevo EnvÃ­o</div>
+        <div class="form-row">
+          <div class="field">
+            <label>Local Destino *</label>
+            <select id="n-destino"><option value="">Selecciona...</option></select>
+          </div>
+          <div class="field">
+            <label>Conductor *</label>
+            <select id="n-conductor"><option value="">Selecciona...</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>ObservaciÃ³n (opcional)</label>
+          <textarea id="n-nota" placeholder="Instrucciones o notas..."></textarea>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+          <div style="font-size:.82rem;font-weight:700;color:#555;text-transform:uppercase">Productos</div>
+          <button class="btn btn-outline btn-sm" onclick="addProdRow()">+ Agregar</button>
+        </div>
+        <div id="prods-list"></div>
+        <button class="btn btn-primary btn-full" style="margin-top:.75rem" onclick="crearEnvio()">âï¸ Crear EnvÃ­o</button>
+      </div>
+    </div>
+
+    <!-- DETALLE ENVIO -->
+    <div id="pg-detalle" class="page">
+      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
+      <div id="detalle-content"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="pg-admin" class="page">
+      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
+      <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">âï¸ AdministraciÃ³n</div>
+      <div class="tabs">
+        <button class="tab-btn on" onclick="adminTab('usuarios',this)">Usuarios</button>
+        <button class="tab-btn" onclick="adminTab('locales',this)">Locales</button>
+        <button class="tab-btn" onclick="adminTab('productos',this)">Productos</button>
+        <button class="tab-btn" onclick="adminTab('historial',this)">Historial</button>
+      </div>
+      <div id="admin-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FIREBASE CONFIG - RELLENA CON TUS DATOS
+     ============================================================ -->
+<script>
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyBs2LUVSVSWBwuzet8hqAhM4PUOatmDjIo",
+  authDomain:        "larusia-apps.firebaseapp.com",
+  databaseURL:       "https://larusia-apps-default-rtdb.firebaseio.com/",
+  projectId:         "larusia-apps",
+  storageBucket:     "larusia-apps.firebasestorage.app",
+  messagingSenderId: "196879088302",
+  appId:             "1:196879088302:web:8d20d5a8cb1ea46737cb3f"
+};
+</script>
+
+<!-- ============================================================
+     APLICACION
+     ============================================================ -->
+<script>
+// ---- INICIALIZAR FIREBASE ----
+firebase.initializeApp(FIREBASE_CONFIG);
+const DB = firebase.database();
+
+// ---- DATOS POR DEFECTO ----
+const DEFAULT_USERS = {
+  admin:           { pass:'admin123',  role:'admin',      name:'Administrador',       local:null },
+  genesis:         { pass:'1234',      role:'encargado',  name:'Genesis',             local:'gabriel' },
+  recep_larrain:   { pass:'1234',      role:'receptor',   name:'RecepciÃ³n LarraÃ­n',   local:'larrain' },
+  recep_abuelo:    { pass:'1234',      role:'receptor',   name:'RecepciÃ³n Abuelo',    local:'abuelo' },
+  recep_pasteleria:{ pass:'1234',      role:'receptor',   name:'RecepciÃ³n PastelerÃ­a',local:'pasteleria' },
+  dilan:           { pass:'1234',      role:'conductor',  name:'Dilan',               local:null },
+  lorrain:         { pass:'1234',      role:'conductor',  name:'Lorrain',             local:null },
+};
+const DEFAULT_LOCALES = {
+  gabriel:'Gabriel', larrain:'LarraÃ­n', abuelo:'Abuelo', pasteleria:'PastelerÃ­a', central:'Central'
+};
+const DEFAULT_PRODUCTOS = [
+  'Pino','Mechada','Chapa Trad','Chapa Napo',
+  'Empa Napo','Empa Mechada','Empa Pollo','Pan','Torta','Otro'
+];
+
+// ---- ESTADO ----
+let CU = null; // currentUser
+let DATA = { users:{}, locales:{}, productos:[], envios:{} };
+let prodRowCount = 0;
+let currentEnvioId = null;
+let listenersActive = false;
+
+// ---- HELPERS ----
+const roleLabel = r => ({admin:'Admin',encargado:'EnvÃ­o',conductor:'Conductor',receptor:'RecepciÃ³n'}[r]||r);
+const fmt = ts => new Date(ts).toLocaleString('es-CL');
+const fmtDate = ts => new Date(ts).toLocaleDateString('es-CL');
+const fmtTime = ts => new Date(ts).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+
+// ---- INICIALIZAR DATOS EN FIREBASE (primera vez) ----
+async function initFirebaseData() {
+  const [usersSnap, localesSnap, prodSnap] = await Promise.all([
+    DB.ref('ricopan/users').get(),
+    DB.ref('ricopan/locales').get(),
+    DB.ref('ricopan/productos').get()
+  ]);
+  const updates = {};
+  if (!usersSnap.exists())   updates['ricopan/users']    = DEFAULT_USERS;
+  if (!localesSnap.exists()) updates['ricopan/locales']  = DEFAULT_LOCALES;
+  if (!prodSnap.exists())    updates['ricopan/productos'] = DEFAULT_PRODUCTOS;
+  if (Object.keys(updates).length) await DB.ref().update(updates);
+}
+
+// ---- LISTENERS EN TIEMPO REAL ----
+function startListeners() {
+  if (listenersActive) return;
+  listenersActive = true;
+  DB.ref('ricopan/users').on('value', s => { DATA.users = s.val()||{}; });
+  DB.ref('ricopan/locales').on('value', s => { DATA.locales = s.val()||{}; renderIfDashboard(); });
+  DB.ref('ricopan/productos').on('value', s => { DATA.productos = s.val()||[]; });
+  DB.ref('ricopan/envios').on('value', s => { DATA.envios = s.val()||{}; renderIfDashboard(); });
+}
+
+function renderIfDashboard() {
+  if (document.getElementById('pg-dashboard').classList.contains('on')) renderDashboard();
+}
+
+// ---- ARRANQUE ----
+window.addEventListener('load', async () => {
+  const overlay = document.getElementById('loading-overlay');
+  try {
+    await initFirebaseData();
+    startListeners();
+    // Esperar a que lleguen datos
+    await new Promise(r => setTimeout(r, 600));
+  } catch(e) {
+    console.error('Firebase error:', e);
+    // Continuar igual (modo offline con datos en memoria)
+  }
+  overlay.style.display = 'none';
+
+  // Restaurar sesiÃ³n
+  const saved = sessionStorage.getItem('ricopan_cu');
+  if (saved) {
+    CU = JSON.parse(saved);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('hdr-user').textContent = CU.name + ' Â· ' + roleLabel(CU.role);
+    goTo('dashboard');
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+});
+
+// ---- LOGIN ----
+function doLogin() {
+  const user = document.getElementById('u-user').value.trim().toLowerCase();
+  const pass = document.getElementById('u-pass').value;
+  const err  = document.getElementById('login-err');
+
+  const u = DATA.users[user];
+  if (u && u.pass === pass) {
+    CU = { id:user, ...u };
+    sessionStorage.setItem('ricopan_cu', JSON.stringify(CU));
+    err.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('hdr-user').textContent = CU.name + ' Â· ' + roleLabel(CU.role);
+    goTo('dashboard');
+  } else {
+    err.textContent = 'Usuario o contraseÃ±a incorrectos';
+    err.style.display = 'block';
+  }
+}
+
+function doLogout() {
+  CU = null;
+  sessionStorage.removeItem('ricopan_cu');
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('u-user').value = '';
+  document.getElementById('u-pass').value = '';
+}
+
+document.addEventListener('keypress', e => {
+  if (e.key==='Enter') {
+    if (document.getElementById('login-screen').style.display!=='none') doLogin();
+  }
+});
+
+// ---- NAVEGACION ----
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById('pg-'+page).classList.add('on');
+  window.scrollTo(0,0);
+  if (page==='dashboard') renderDashboard();
+  if (page==='nuevo')     renderNuevo();
+  if (page==='admin')     adminTab('usuarios', document.querySelector('.tab-btn'));
+}
+
+// ---- STATUS ----
+function badge(status) {
+  const map = {
+    pendiente_retiro:'<span class="badge b-pendiente">â³ Pend. retiro</span>',
+    en_transito:     '<span class="badge b-transito">ð En trÃ¡nsito</span>',
+    entregado:       '<span class="badge b-entregado">ð¦ Entregado</span>',
+    completado:      '<span class="badge b-completado">â Completado</span>',
+    reclamado:       '<span class="badge b-reclamado">â ï¸ Reclamado</span>',
+  };
+  return map[status]||`<span class="badge">${status}</span>`;
+}
+
+// ---- CARD DE ENVIO ----
+function envioCard(id, e) {
+  const L = DATA.locales;
+  const U = DATA.users;
+  const origen  = L[e.senderLocal]  || e.senderLocal  || '-';
+  const destino = L[e.destinoLocal] || e.destinoLocal || '-';
+  const driver  = U[e.driverId];
+  const total   = (e.products||[]).reduce((s,p)=>s+(+p.cantidad||0),0);
+  return `
+  <div class="envio-item" onclick="verEnvio('${id}')">
+    <div class="envio-head">
+      <div>
+        <div class="envio-ruta">${origen} â ${destino}</div>
+        <div class="envio-sub">${fmtDate(e.createdAt)} ${fmtTime(e.createdAt)} Â· ${driver?.name||'?'} Â· ${total} unid.</div>
+        <div class="envio-sub">#${id.slice(-5).toUpperCase()}</div>
+      </div>
+      ${badge(e.status)}
+    </div>
+  </div>`;
+}
+
+// ---- DASHBOARD ----
+function renderDashboard() {
+  if (!CU) return;
+  const envios = Object.entries(DATA.envios).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  let html = '';
+  if      (CU.role==='encargado')  html = dashEncargado(envios);
+  else if (CU.role==='conductor')  html = dashConductor(envios);
+  else if (CU.role==='receptor')   html = dashReceptor(envios);
+  else if (CU.role==='admin')      html = dashAdmin(envios);
+  document.getElementById('dashboard-content').innerHTML = html;
+}
+
+function dashEncargado(envios) {
+  const mine = envios.filter(([,e])=>e.senderLocal===CU.local);
+  const act  = mine.filter(([,e])=>!['completado','reclamado'].includes(e.status));
+  const hist = mine.filter(([,e])=> ['completado','reclamado'].includes(e.status)).slice(0,15);
+  const c    = s => mine.filter(([,e])=>e.status===s).length;
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
+    <div>
+      <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Mis EnvÃ­os</div>
+      <div style="font-size:.78rem;color:#888">Local: ${DATA.locales[CU.local]||CU.local}</div>
+    </div>
+    <button class="btn btn-primary" onclick="goTo('nuevo')">+ Nuevo EnvÃ­o</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>${c('pendiente_retiro')}</b><span>Pend. retiro</span></div>
+    <div class="stat"><b>${c('en_transito')}</b><span>En trÃ¡nsito</span></div>
+    <div class="stat"><b>${c('completado')}</b><span>Completados</span></div>
+    <div class="stat"><b style="color:#e74c3c">${c('reclamado')}</b><span>Reclamados</span></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">EnvÃ­os activos</span></div>
+    ${act.length ? act.map(([id,e])=>envioCard(id,e)).join('') : '<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os activos</p></div>'}
+  </div>
+  ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
+}
+
+function dashConductor(envios) {
+  const mine      = envios.filter(([,e])=>e.driverId===CU.id);
+  const retirar   = mine.filter(([,e])=>e.status==='pendiente_retiro');
+  const transito  = mine.filter(([,e])=>e.status==='en_transito');
+  const hist      = mine.filter(([,e])=>['completado','entregado','reclamado'].includes(e.status)).slice(0,10);
+  return `
+  <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">ð Panel Conductor</div>
+  <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><b style="color:#f39c12">${retirar.length}</b><span>Por retirar</span></div>
+    <div class="stat"><b style="color:#3498db">${transito.length}</b><span>En trÃ¡nsito</span></div>
+    <div class="stat"><b>${mine.filter(([,e])=>e.status==='completado').length}</b><span>Completados</span></div>
+  </div>
+  ${retirar.length ? `<div class="card"><div class="card-head"><span class="card-title">â³ Por retirar</span></div>${retirar.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${transito.length ? `<div class="card"><div class="card-head"><span class="card-title">ð En trÃ¡nsito</span></div>${transito.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${!retirar.length&&!transito.length ? '<div class="alert alert-ok">â Sin envÃ­os pendientes. Â¡Todo al dÃ­a!</div>' : ''}
+  ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
+}
+
+function dashReceptor(envios) {
+  const mine   = envios.filter(([,e])=>e.destinoLocal===CU.local);
+  const conf   = mine.filter(([,e])=>e.status==='entregado');
+  const camino = mine.filter(([,e])=>['pendiente_retiro','en_transito'].includes(e.status));
+  const hist   = mine.filter(([,e])=>['completado','reclamado'].includes(e.status)).slice(0,15);
+  return `
+  <div>
+    <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">ð¥ RecepciÃ³n</div>
+    <div style="font-size:.78rem;color:#888;margin-bottom:.85rem">Local: ${DATA.locales[CU.local]||CU.local}</div>
+  </div>
+  <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><b style="color:#9b59b6">${conf.length}</b><span>Por confirmar</span></div>
+    <div class="stat"><b style="color:#3498db">${camino.length}</b><span>En camino</span></div>
+    <div class="stat"><b>${mine.filter(([,e])=>e.status==='completado').length}</b><span>Recibidos</span></div>
+  </div>
+  ${conf.length ? `<div class="alert alert-warn">ð¦ ${conf.length} envÃ­o(s) esperando tu confirmaciÃ³n</div><div class="card"><div class="card-head"><span class="card-title">ð¦ Por confirmar</span></div>${conf.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${camino.length ? `<div class="card"><div class="card-head"><span class="card-title">ð En camino</span></div>${camino.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${!conf.length&&!camino.length ? '<div class="alert alert-ok">â Sin envÃ­os pendientes</div>' : ''}
+  ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
+}
+
+function dashAdmin(envios) {
+  const recl = envios.filter(([,e])=>e.status==='reclamado');
+  const act  = envios.filter(([,e])=>!['completado','reclamado'].includes(e.status));
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
+    <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Panel Admin</div>
+    <button class="btn btn-outline btn-sm" onclick="goTo('admin')">âï¸ Config</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>${envios.length}</b><span>Total</span></div>
+    <div class="stat"><b style="color:#f39c12">${act.length}</b><span>Activos</span></div>
+    <div class="stat"><b>${envios.filter(([,e])=>e.status==='completado').length}</b><span>Completados</span></div>
+    <div class="stat"><b style="color:#e74c3c">${recl.length}</b><span>Reclamados</span></div>
+  </div>
+  ${recl.length ? `<div class="alert alert-err">â ï¸ ${recl.length} envÃ­o(s) con reclamos</div><div class="card"><div class="card-head"><span class="card-title">â ï¸ Reclamados</span></div>${recl.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  <div class="card">
+    <div class="card-head"><span class="card-title">Todos los envÃ­os recientes</span></div>
+    ${envios.slice(0,30).map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os registrados</p></div>'}
+  </div>`;
+}
+
+// ---- NUEVO ENVIO ----
+function renderNuevo() {
+  const L = DATA.locales;
+  const U = DATA.users;
+  // Destinos
+  const dest = document.getElementById('n-destino');
+  dest.innerHTML = '<option value="">Selecciona local destino...</option>';
+  Object.entries(L).forEach(([id,name]) => {
+    if (id !== CU.local) dest.innerHTML += `<option value="${id}">${name}</option>`;
+  });
+  // Conductores
+  const cond = document.getElementById('n-conductor');
+  cond.innerHTML = '<option value="">Selecciona conductor...</option>';
+  Object.entries(U).filter(([,u])=>u.role==='conductor').forEach(([id,u]) => {
+    cond.innerHTML += `<option value="${id}">${u.name}</option>`;
+  });
+  document.getElementById('n-nota').value = '';
+  document.getElementById('prods-list').innerHTML = '';
+  prodRowCount = 0;
+  addProdRow();
+}
+
+function addProdRow() {
+  prodRowCount++;
+  const id = prodRowCount;
+  const opts = (DATA.productos||[]).map(p=>`<option value="${p}">${p}</option>`).join('');
+  const div = document.createElement('div');
+  div.id = `pr-${id}`;
+  div.className = 'prod-row';
+  div.innerHTML = `
+    <select id="pn-${id}"><option value="">Producto...</option>${opts}</select>
+    <input type="number" id="pq-${id}" placeholder="Cantidad" min="1">
+    <button class="btn-del" onclick="document.getElementById('pr-${id}').remove()">â</button>`;
+  document.getElementById('prods-list').appendChild(div);
+}
+
+async function crearEnvio() {
+  const destino   = document.getElementById('n-destino').value;
+  const conductor = document.getElementById('n-conductor').value;
+  const nota      = document.getElementById('n-nota').value.trim();
+
+  if (!destino)   { alert('Selecciona el local de destino'); return; }
+  if (!conductor) { alert('Selecciona el conductor'); return; }
+
+  const products = [];
+  for (let i = 1; i <= prodRowCount; i++) {
+    const n = document.getElementById(`pn-${i}`)?.value;
+    const q = parseInt(document.getElementById(`pq-${i}`)?.value);
+    if (n && q > 0) products.push({ producto:n, cantidad:q });
+  }
+  if (!products.length) { alert('Agrega al menos un producto con cantidad'); return; }
+
+  const now = Date.now();
+  const envio = {
+    senderLocal: CU.local, senderUserId: CU.id, senderUserName: CU.name,
+    destinoLocal: destino, driverId: conductor,
+    products, nota, status:'pendiente_retiro', createdAt: now,
+    timeline:[{ action:'creado', userId:CU.id, userName:CU.name, timestamp:now, note:`EnvÃ­o creado por ${CU.name}` }]
+  };
+
+  try {
+    await DB.ref('ricopan/envios').push(envio);
+    alert('â EnvÃ­o creado exitosamente');
+    goTo('dashboard');
+  } catch(e) { alert('Error: '+e.message); }
+}
+
+// ---- VER DETALLE ENVIO ----
+function verEnvio(id) {
+  currentEnvioId = id;
+  const e = DATA.envios[id];
+  if (!e) return;
+
+  const L = DATA.locales, U = DATA.users;
+  const origen  = L[e.senderLocal]  || e.senderLocal;
+  const destino = L[e.destinoLocal] || e.destinoLocal;
+  const driver  = U[e.driverId];
+  const total   = (e.products||[]).reduce((s,p)=>s+(+p.cantidad||0),0);
+
+  const prodsHTML = (e.products||[]).map(p=>`<tr><td>${p.producto}</td><td>${p.cantidad}</td></tr>`).join('');
+  const tlHTML = (e.timeline||[]).map(t=>`
+    <div class="timeline-item">
+      <div class="tl-dot"></div>
+      <div>
+        <div class="tl-who">${t.userName||t.userId}</div>
+        <div class="tl-when">${fmt(t.timestamp)}</div>
+        ${t.note?`<div class="tl-note">${t.note}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  // BotÃ³n de acciÃ³n segÃºn rol y estado
+  let actionHTML = '';
+  if (CU.role==='conductor' && CU.id===e.driverId) {
+    if (e.status==='pendiente_retiro') {
+      actionHTML = `<div class="action-box">
+        <h3>â Confirmar Retiro en ${origen}</h3>
+        <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que retiraste los productos:</p>
+        <textarea id="act-nota" placeholder="ObservaciÃ³n (opcional)..."></textarea>
+        <button class="btn btn-warning btn-full" style="margin-top:.6rem" onclick="accion('retiro','${id}')">â ConfirmÃ© el retiro</button>
+      </div>`;
+    } else if (e.status==='en_transito') {
+      actionHTML = `<div class="action-box">
+        <h3>ð  Confirmar Entrega en ${destino}</h3>
+        <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que entregaste los productos:</p>
+        <textarea id="act-nota" placeholder="ObservaciÃ³n (opcional)..."></textarea>
+        <button class="btn btn-primary btn-full" style="margin-top:.6rem" onclick="accion('entrega','${id}')">â ConfirmÃ© la entrega</button>
+      </div>`;
+    }
+  }
+  if (CU.role==='receptor' && CU.local===e.destinoLocal && e.status==='entregado') {
+    actionHTML = `<div class="action-box">
+      <h3>ð Confirmar RecepciÃ³n</h3>
+      <div style="margin-bottom:.65rem">
+        <div class="radio-opt"><input type="radio" name="re" id="re-ok" value="completado" checked><label for="re-ok" style="color:#27ae60">â Todo correcto</label></div>
+        <div class="radio-opt"><input type="radio" name="re" id="re-mal" value="reclamado"><label for="re-mal" style="color:#e74c3c">â ï¸ Hay un problema</label></div>
+      </div>
+      <textarea id="act-nota" placeholder="Detalle de recepciÃ³n o descripciÃ³n del problema..."></textarea>
+      <button class="btn btn-success btn-full" style="margin-top:.6rem" onclick="accion('recepcion','${id}')">â Confirmar RecepciÃ³n</button>
+    </div>`;
+  }
+  if (CU.role==='admin') {
+    actionHTML += `<div style="margin-top:.75rem">
+      <button class="btn btn-danger btn-sm" onclick="eliminarEnvio('${id}')">ðï¸ Eliminar envÃ­o</button>
+    </div>`;
+  }
+
+  document.getElementById('detalle-content').innerHTML = `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem">
+      <div>
+        <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e">${origen} â ${destino}</div>
+        <div style="font-size:.75rem;color:#888">Creado: ${fmt(e.createdAt)} Â· #${id.slice(-6).toUpperCase()}</div>
+      </div>
+      ${badge(e.status)}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.85rem">
+      <div><div style="font-size:.75rem;color:#888">Conductor</div><div style="font-weight:700">${driver?.name||e.driverId}</div></div>
+      <div><div style="font-size:.75rem;color:#888">Enviado por</div><div style="font-weight:700">${e.senderUserName||e.senderUserId}</div></div>
+    </div>
+    ${e.nota?`<div class="alert alert-info" style="margin-bottom:.85rem">ð ${e.nota}</div>`:''}
+    <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.55rem;text-transform:uppercase">Productos</div>
+    <table class="prod-table">
+      <thead><tr><th>Producto</th><th>Cantidad</th></tr></thead>
+      <tbody>${prodsHTML}</tbody>
+      <tfoot><tr><td>Total</td><td>${total}</td></tr></tfoot>
+    </table>
+    ${actionHTML}
+  </div>
+  <div class="card">
+    <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.75rem;text-transform:uppercase">ð Historial</div>
+    ${tlHTML||'<p style="color:#aaa;font-size:.85rem">Sin historial</p>'}
+  </div>`;
+  goTo('detalle');
+}
+
+// ---- ACCIONES ----
+async function accion(tipo, id) {
+  const nota = document.getElementById('act-nota')?.value?.trim() || '';
+  const e    = DATA.envios[id];
+  if (!e) return;
+
+  const now = Date.now();
+  let newStatus, tlNote;
+
+  if (tipo==='retiro') {
+    newStatus = 'en_transito';
+    tlNote = nota || 'Conductor confirmÃ³ el retiro';
+  } else if (tipo==='entrega') {
+    newStatus = 'entregado';
+    tlNote = nota || 'Conductor confirmÃ³ la entrega';
+  } else if (tipo==='recepcion') {
+    newStatus = document.querySelector('input[name="re"]:checked')?.value || 'completado';
+    tlNote = nota || (newStatus==='completado' ? 'RecepciÃ³n confirmada' : 'Reclamo registrado');
+  }
+
+  const timeline = [...(e.timeline||[]), {
+    action: tipo, userId: CU.id, userName: CU.name, timestamp: now, note: tlNote
+  }];
+
+  try {
+    await DB.ref(`ricopan/envios/${id}`).update({ status:newStatus, timeline, [`${tipo}At`]:now });
+    verEnvio(id);
+  } catch(err) { alert('Error: '+err.message); }
+}
+
+async function eliminarEnvio(id) {
+  if (!confirm('Â¿Eliminar este envÃ­o? No se puede deshacer.')) return;
+  await DB.ref(`ricopan/envios/${id}`).remove();
+  goTo('dashboard');
+}
+
+// ---- ADMIN ----
+function adminTab(tab, el) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  if (el) el.classList.add('on');
+  const c = document.getElementById('admin-content');
+  const L = DATA.locales, U = DATA.users, P = DATA.productos;
+
+  if (tab==='usuarios') {
+    const rows = Object.entries(U).map(([id,u])=>`
+      <tr>
+        <td>${u.name}</td><td><code>${id}</code></td>
+        <td>${roleLabel(u.role)}</td>
+        <td>${u.local?(L[u.local]||u.local):'-'}</td>
+        <td><code>${u.pass}</code></td>
+      </tr>`).join('');
+    c.innerHTML = `<div class="card">
+      <div class="card-head"><span class="card-title">Usuarios</span>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('new-u').style.display=''">+ Agregar</button>
+      </div>
+      <div id="new-u" class="adm-form" style="display:none">
+        <div class="form-row" style="gap:.5rem">
+          <div class="field"><label>Nombre</label><input id="nu-n" placeholder="Nombre completo"></div>
+          <div class="field"><label>Usuario (login)</label><input id="nu-u" placeholder="sin espacios"></div>
+          <div class="field"><label>ContraseÃ±a</label><input id="nu-p" placeholder="ContraseÃ±a"></div>
+          <div class="field"><label>Rol</label>
+            <select id="nu-r" onchange="document.getElementById('nu-l-w').style.display=(['encargado','receptor'].includes(this.value)?'':'none')">
+              <option value="">Selecciona...</option>
+              <option value="encargado">Encargado EnvÃ­o</option>
+              <option value="conductor">Conductor</option>
+              <option value="receptor">Receptor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field" id="nu-l-w" style="display:none"><label>Local</label>
+            <select id="nu-l">${Object.entries(L).map(([id,n])=>`<option value="${id}">${n}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-success" onclick="saveUser()">Guardar</button>
+          <button class="btn btn-outline" onclick="document.getElementById('new-u').style.display='none'">Cancelar</button>
+        </div>
+      </div>
+      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>ContraseÃ±a</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>`;
+
+  } else if (tab==='locales') {
+    const rows = Object.entries(L).map(([id,n])=>`
+      <tr><td>${n}</td><td><code>${id}</code></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delLocal('${id}')">Eliminar</button></td></tr>`).join('');
+    c.innerHTML = `<div class="card">
+      <div class="card-head"><span class="card-title">Locales</span>
+        <button class="btn btn-primary btn-sm" onclick="addLocal()">+ Agregar</button></div>
+      <table class="adm-table"><thead><tr><th>Nombre</th><th>ID</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+
+  } else if (tab==='productos') {
+    const rows = P.map((p,i)=>`
+      <tr><td>${p}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="delProducto(${i})">Eliminar</button></td></tr>`).join('');
+    c.innerHTML = `<div class="card">
+      <div class="card-head"><span class="card-title">Productos</span>
+        <button class="btn btn-primary btn-sm" onclick="addProducto()">+ Agregar</button></div>
+      <table class="adm-table"><thead><tr><th>Producto</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+
+  } else if (tab==='historial') {
+    const all = Object.entries(DATA.envios).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+    c.innerHTML = `<div class="card">
+      <div class="card-head"><span class="card-title">Historial completo (${all.length} envÃ­os)</span>
+        <button class="btn btn-danger btn-sm" onclick="limpiarCompletados()">ðï¸ Limpiar completados</button>
+      </div>
+      ${all.map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os</p></div>'}
+    </div>`;
+  }
+}
+
+async function saveUser() {
+  const n = document.getElementById('nu-n').value.trim();
+  const u = document.getElementById('nu-u').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const p = document.getElementById('nu-p').value.trim();
+  const r = document.getElementById('nu-r').value;
+  const lw= document.getElementById('nu-l-w').style.display;
+  const l = (lw!=='none') ? document.getElementById('nu-l').value : null;
+  if (!n||!u||!p||!r) { alert('Completa todos los campos'); return; }
+  if (DATA.users[u]) { alert('Ese usuario ya existe'); return; }
+  await DB.ref(`ricopan/users/${u}`).set({ name:n, pass:p, role:r, local:l||null });
+  alert('â Usuario creado');
+  adminTab('usuarios', document.querySelector('.tab-btn.on'));
+}
+async function addLocal() {
+  const n = prompt('Nombre del local:');
+  if (!n?.trim()) return;
+  const id = n.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  await DB.ref(`ricopan/locales/${id}`).set(n.trim());
+  adminTab('locales', document.querySelector('.tab-btn.on'));
+}
+async function delLocal(id) {
+  if (!confirm(`Â¿Eliminar local "${DATA.locales[id]}"?`)) return;
+  await DB.ref(`ricopan/locales/${id}`).remove();
+}
+async function addProducto() {
+  const n = prompt('Nombre del producto:');
+  if (!n?.trim()) return;
+  const p = [...(DATA.productos||[]), n.trim()];
+  await DB.ref('ricopan/productos').set(p);
+  adminTab('productos', document.querySelector('.tab-btn.on'));
+}
+async function delProducto(i) {
+  const p = [...(DATA.productos||[])];
+  p.splice(i,1);
+  await DB.ref('ricopan/productos').set(p);
+  adminTab('productos', document.querySelector('.tab-btn.on'));
+}
+async function limpiarCompletados() {
+  if (!confirm('Â¿Eliminar todos los envÃ­os completados?')) return;
+  const updates = {};
+  Object.entries(DATA.envios).forEach(([id,e]) => {
+    if (e.status==='completado') updates[`ricopan/envios/${id}`] = null;
+  });
+  await DB.ref().update(updates);
+  adminTab('historial', document.querySelector('.tab-btn.on'));
+}
+</script>
+</body>
+</html>
