@@ -13,6 +13,10 @@
   <!-- jsPDF para exportar -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- SheetJS para Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- EmailJS para envío de correos -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -245,6 +249,7 @@
         <button class="tab-btn" onclick="adminTab('locales',this)">Locales</button>
         <button class="tab-btn" onclick="adminTab('productos',this)">Productos</button>
         <button class="tab-btn" onclick="adminTab('historial',this)">Historial</button>
+        <button class="tab-btn" onclick="adminTab('reportes',this)">Reportes</button>
       </div>
       <div id="admin-content"></div>
     </div>
@@ -272,9 +277,9 @@ const FIREBASE_CONFIG = {
 <script>
 // ---- INICIALIZAR FIREBASE ----
 firebase.initializeApp(FIREBASE_CONFIG);
-const DH	 = firebase.database();
+const DB = firebase.database();
 
-// ---- DATOS POI DERECTO ----
+// ---- DATOS POR DEFECTO ----
 const DEFAULT_USERS = {
   admin:           { pass:'admin123',  role:'admin',      name:'Administrador',       local:null },
   genesis:         { pass:'1234',      role:'encargado',  name:'Genesis',             local:'gabriel' },
@@ -288,7 +293,8 @@ const DEFAULT_LOCALES = {
   gabriel:'Gabriel', larrain:'Larraín', abuelo:'Abuelo', pasteleria:'Pastelería', central:'Central'
 };
 const DEFAULT_PRODUCTOS = [
-  'Pino','Mechada','Chapa Trad','Chapa Napo','Empa Napo','Empa Mechada','Empa Pollo','Pan','Torta','Otro'
+  'Pino','Mechada','Chapa Trad','Chapa Napo',
+  'Empa Napo','Empa Mechada','Empa Pollo','Pan','Torta','Otro'
 ];
 
 // ---- ESTADO ----
@@ -345,6 +351,8 @@ window.addEventListener('load', async () => {
     // Continuar igual (modo offline con datos en memoria)
   }
   overlay.style.display = 'none';
+  loadEmailConfig();
+  checkReporteDiario();
 
   // Restaurar sesión
   const saved = sessionStorage.getItem('ricopan_cu');
@@ -645,7 +653,15 @@ function verEnvio(id) {
       </div>`;
     }
   }
-  if (CU.role==='receptor' && CU.local===e.destinoLocal && e.status==='entregado')ón</button>
+  if (CU.role==='receptor' && CU.local===e.destinoLocal && e.status==='entregado') {
+    actionHTML = `<div class="action-box">
+      <h3>📋 Confirmar Recepción</h3>
+      <div style="margin-bottom:.65rem">
+        <div class="radio-opt"><input type="radio" name="re" id="re-ok" value="completado" checked><label for="re-ok" style="color:#27ae60">✅ Todo correcto</label></div>
+        <div class="radio-opt"><input type="radio" name="re" id="re-mal" value="reclamado"><label for="re-mal" style="color:#e74c3c">⚠️ Hay un problema</label></div>
+      </div>
+      <textarea id="act-nota" placeholder="Detalle de recepción o descripción del problema..."></textarea>
+      <button class="btn btn-success btn-full" style="margin-top:.6rem" onclick="accion('recepcion','${id}')">✅ Confirmar Recepción</button>
     </div>`;
   }
   if (CU.role==='admin') {
@@ -709,6 +725,9 @@ async function accion(tipo, id) {
 
   try {
     await DB.ref(`ricopan/envios/${id}`).update({ status:newStatus, timeline, [`${tipo}At`]:now });
+    if (newStatus === 'reclamado') {
+      enviarAlertaDiferencia(id, {...e, status:newStatus}, tlNote);
+    }
     verEnvio(id);
   } catch(err) { alert('Error: '+err.message); }
 }
@@ -793,37 +812,14 @@ function adminTab(tab, el) {
       </div>
       ${all.map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos</p></div>'}
     </div>`;
+  } else if (tab==='reportes') {
+    renderTabReportes(c);
   }
 }
 
 async function saveUser() {
   const n = document.getElementById('nu-n').value.trim();
   const u = document.getElementById('nu-u').value.trim().toLowerCase().replace(/\s+/g,'_');
-  const p = document.getElementById('nu-p').value.trim();
-  const r = document.getElementById('nu-r').value;
-  const lw= document.getElementById('nu-l-w').style.display;
-  const l = (lw!=='none') ? document.getElementById('nu-l').value : null;
-  if (!n||!u||!p||!r) { alert('Completa todos los campos'); return; }
-  if (DATA.users[u]) { alert('Ese usuario ya existe'); return; }
-  await DB.ref(`ricopan/users/${u}`).set({ name:n, pass:p, role:r, local:l||null });
-  alert('✅ Usuario creado');
-  adminTab('usuarios', document.querySelector('.tab-btn.on'));
-}
-async function addLocal() {
-  const n = prompt('Nombre del local:');
-  if (!n?.trim()) return;
-  const id = n.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
-  await DB.ref(`ricopan/locales/${id}`).set(n.trim());
-  adminTab('locales', document.querySelector('.tab-btn.on'));
-}
-async function delLocal(id) {
-  if (!confirm(`¿Eliminar local "${DATA.locales[id]}"?`)) return;
-  await DB.ref(`ricopan/locales/${id}`).remove();
-}
-async function addProducto() {
-  const n = prompt('Nombre del producto:');
-  if (!n?.trim()) return;
-  const p = [...(DATA.productos||[]), n.trim()];alue.trim().toLowerCase().replace(/\s+/g,'_');
   const p = document.getElementById('nu-p').value.trim();
   const r = document.getElementById('nu-r').value;
   const lw= document.getElementById('nu-l-w').style.display;
@@ -866,6 +862,274 @@ async function limpiarCompletados() {
   });
   await DB.ref().update(updates);
   adminTab('historial', document.querySelector('.tab-btn.on'));
+}
+
+// ---- EMAIL CONFIG ----
+let EJSCONFIG = { publicKey:'', serviceId:'', templateAlert:'', templateReport:'', adminEmail:'adm.pasteleriaricopan@gmail.com' };
+
+async function loadEmailConfig() {
+  try {
+    const snap = await DB.ref('ricopan/config/emailjs').get();
+    if (snap.exists()) {
+      EJSCONFIG = { ...EJSCONFIG, ...snap.val() };
+      if (EJSCONFIG.publicKey) emailjs.init(EJSCONFIG.publicKey);
+    }
+  } catch(e) { console.warn('EmailJS config no encontrada:', e.message); }
+}
+
+async function saveEmailConfig() {
+  const pk  = document.getElementById('ejs-pk')?.value?.trim();
+  const sid = document.getElementById('ejs-sid')?.value?.trim();
+  const ta  = document.getElementById('ejs-ta')?.value?.trim();
+  const tr  = document.getElementById('ejs-tr')?.value?.trim();
+  if (!pk||!sid) { alert('Ingresa al menos la Public Key y Service ID'); return; }
+  const cfg = { publicKey:pk, serviceId:sid, templateAlert:ta||'', templateReport:tr||'', adminEmail:'adm.pasteleriaricopan@gmail.com' };
+  await DB.ref('ricopan/config/emailjs').set(cfg);
+  EJSCONFIG = cfg;
+  emailjs.init(pk);
+  alert('✅ Configuración guardada');
+}
+
+// ---- ALERTA DE DIFERENCIA ----
+async function enviarAlertaDiferencia(envioId, envio, nota) {
+  try {
+    if (!EJSCONFIG.publicKey || !EJSCONFIG.serviceId || !EJSCONFIG.templateAlert) {
+      console.warn('EmailJS no configurado, alerta no enviada');
+      return;
+    }
+    const L = DATA.locales;
+    const origen  = L[envio.senderLocal]  || envio.senderLocal;
+    const destino = L[envio.destinoLocal] || envio.destinoLocal;
+    const productos = (envio.products||[]).map(p=>`${p.producto} x${p.cantidad}`).join(', ');
+    await emailjs.send(EJSCONFIG.serviceId, EJSCONFIG.templateAlert, {
+      to_email:    EJSCONFIG.adminEmail,
+      envio_id:    envioId.slice(-6).toUpperCase(),
+      origen,
+      destino,
+      conductor:   DATA.users[envio.driverId]?.name || envio.driverId,
+      productos,
+      observacion: nota || '(sin observación)',
+      fecha:       fmt(Date.now()),
+      reportado_por: CU.name
+    });
+    console.log('✅ Alerta de diferencia enviada');
+  } catch(err) { console.error('Error enviando alerta:', err); }
+}
+
+// ---- REPORTE DIARIO ----
+function getEnviosHoy() {
+  const inicio = new Date(); inicio.setHours(0,0,0,0);
+  const fin    = new Date(); fin.setHours(23,59,59,999);
+  return Object.entries(DATA.envios).filter(([,e]) =>
+    e.createdAt >= inicio.getTime() && e.createdAt <= fin.getTime()
+  );
+}
+
+function generarPDFReporte(fecha, localId, localNombre, envios) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const L = DATA.locales, U = DATA.users;
+
+  // Cabecera
+  doc.setFillColor(192,57,43);
+  doc.rect(0,0,210,18,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(13);
+  doc.text('Control de Envíos - Ricopan', 10, 12);
+  doc.setFontSize(9);
+  doc.text(`Reporte diario: ${localNombre}  |  ${fecha}`, 10, 16);
+
+  doc.setTextColor(0,0,0);
+  let y = 26;
+
+  // Resumen
+  const compl = envios.filter(([,e])=>e.status==='completado').length;
+  const recl  = envios.filter(([,e])=>e.status==='reclamado').length;
+  const total = envios.length;
+  doc.setFontSize(9);
+  doc.setFont(undefined,'bold');
+  doc.text(`Total movimientos: ${total}  |  Completados: ${compl}  |  Reclamados: ${recl}`, 10, y);
+  doc.setFont(undefined,'normal');
+  y += 8;
+
+  // Tabla
+  const rows = envios.map(([id,e]) => [
+    id.slice(-6).toUpperCase(),
+    L[e.senderLocal]||e.senderLocal||'-',
+    L[e.destinoLocal]||e.destinoLocal||'-',
+    U[e.driverId]?.name||'-',
+    (e.products||[]).reduce((s,p)=>s+(+p.cantidad||0),0),
+    e.status,
+    fmtDate(e.createdAt)
+  ]);
+
+  doc.autoTable({
+    startY: y,
+    head: [['ID','Origen','Destino','Conductor','Unidades','Estado','Fecha']],
+    body: rows,
+    styles: { fontSize:7, cellPadding:1.5 },
+    headStyles: { fillColor:[192,57,43], textColor:255, fontStyle:'bold' },
+    alternateRowStyles: { fillColor:[250,245,245] }
+  });
+
+  // Detalle reclamados
+  const reclamados = envios.filter(([,e])=>e.status==='reclamado');
+  if (reclamados.length) {
+    doc.setFontSize(10); doc.setFont(undefined,'bold');
+    doc.text('⚠️ Envíos con reclamo:', 10, doc.lastAutoTable.finalY+10);
+    doc.setFont(undefined,'normal'); doc.setFontSize(8);
+    let ry = doc.lastAutoTable.finalY+18;
+    reclamados.forEach(([id,e]) => {
+      const lastNote = [...(e.timeline||[])].reverse().find(t=>t.note)?.note || '-';
+      doc.text(`• #${id.slice(-6).toUpperCase()}: ${lastNote}`, 14, ry);
+      ry += 6;
+    });
+  }
+
+  return doc;
+}
+
+function generarExcelReporte(fecha, localId, localNombre, envios) {
+  const L = DATA.locales, U = DATA.users;
+  const rows = envios.map(([id,e]) => ({
+    'ID':          id.slice(-6).toUpperCase(),
+    'Fecha':       fmtDate(e.createdAt),
+    'Hora':        fmtTime(e.createdAt),
+    'Origen':      L[e.senderLocal]||e.senderLocal||'-',
+    'Destino':     L[e.destinoLocal]||e.destinoLocal||'-',
+    'Conductor':   U[e.driverId]?.name||'-',
+    'Productos':   (e.products||[]).map(p=>`${p.producto}(${p.cantidad})`).join(', '),
+    'Unidades':    (e.products||[]).reduce((s,p)=>s+(+p.cantidad||0),0),
+    'Estado':      e.status,
+    'Observación': [...(e.timeline||[])].reverse().find(t=>t.note)?.note || ''
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:8},{wch:12},{wch:8},{wch:14},{wch:14},{wch:14},{wch:30},{wch:9},{wch:14},{wch:30}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, localNombre.slice(0,31));
+  return XLSX.write(wb, {bookType:'xlsx', type:'base64'});
+}
+
+async function enviarReportePorLocal(fecha, localId, localNombre, envios) {
+  try {
+    if (!EJSCONFIG.publicKey || !EJSCONFIG.serviceId || !EJSCONFIG.templateReport) {
+      console.warn('EmailJS no configurado, reporte no enviado para', localNombre);
+      return false;
+    }
+    const pdfDoc    = generarPDFReporte(fecha, localId, localNombre, envios);
+    const pdfBase64 = pdfDoc.output('datauristring').split(',')[1];
+    const xlsBase64 = generarExcelReporte(fecha, localId, localNombre, envios);
+
+    const compl = envios.filter(([,e])=>e.status==='completado').length;
+    const recl  = envios.filter(([,e])=>e.status==='reclamado').length;
+
+    await emailjs.send(EJSCONFIG.serviceId, EJSCONFIG.templateReport, {
+      to_email:    EJSCONFIG.adminEmail,
+      local_nombre: localNombre,
+      fecha,
+      total:       envios.length,
+      completados: compl,
+      reclamados:  recl,
+      resumen:     envios.length ? `${envios.length} envíos: ${compl} completados, ${recl} reclamados` : 'Sin movimientos hoy',
+      pdf_attachment:  pdfBase64,
+      xlsx_attachment: xlsBase64
+    });
+    return true;
+  } catch(err) { console.error('Error enviando reporte de', localNombre, err); return false; }
+}
+
+async function reporteDiario(manual=false) {
+  const fecha = new Date().toLocaleDateString('es-CL');
+  const hoy   = new Date().toISOString().slice(0,10);
+
+  // Verificar si ya se envió hoy
+  if (!manual) {
+    const sentSnap = await DB.ref(`ricopan/reportes_enviados/${hoy}`).get();
+    if (sentSnap.exists()) { console.log('Reporte diario ya enviado hoy'); return; }
+  }
+
+  const enviosHoy = getEnviosHoy();
+  if (!enviosHoy.length && !manual) { console.log('Sin envíos hoy, reporte no enviado'); return; }
+
+  const locales = DATA.locales;
+  let enviados = 0;
+
+  for (const [localId, localNombre] of Object.entries(locales)) {
+    const enviosLocal = enviosHoy.filter(([,e]) =>
+      e.senderLocal===localId || e.destinoLocal===localId
+    );
+    if (enviosLocal.length || manual) {
+      const ok = await enviarReportePorLocal(fecha, localId, localNombre, enviosLocal);
+      if (ok) enviados++;
+    }
+  }
+
+  if (enviados > 0) {
+    await DB.ref(`ricopan/reportes_enviados/${hoy}`).set({ sentAt: Date.now(), locales: enviados });
+    console.log(`✅ Reporte diario enviado para ${enviados} locales`);
+    if (manual) alert(`✅ Reporte enviado para ${enviados} local(es)`);
+  } else if (manual) {
+    alert('⚠️ Configure EmailJS en la pestaña Reportes para enviar correos');
+  }
+}
+
+function checkReporteDiario() {
+  const now  = new Date();
+  const hora = now.getHours();
+  if (hora >= 23) {
+    setTimeout(() => reporteDiario(false), 2000);
+  }
+  // Verificar cada hora
+  const msHastaHora = (60 - now.getMinutes()) * 60000;
+  setTimeout(checkReporteDiario, msHastaHora);
+}
+
+// ---- TAB REPORTES EN ADMIN ----
+function renderTabReportes(c) {
+  c.innerHTML = `
+  <div class="card">
+    <div class="card-head"><span class="card-title">📧 Configuración EmailJS</span></div>
+    <p style="font-size:.8rem;color:#555;margin-bottom:.8rem">
+      Para enviar alertas y reportes por email, configura tu cuenta en
+      <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> (gratis hasta 200 emails/mes).
+    </p>
+    <div class="form-row">
+      <div class="field">
+        <label>Public Key</label>
+        <input id="ejs-pk" placeholder="user_xxxxxxxx" value="${EJSCONFIG.publicKey}">
+      </div>
+      <div class="field">
+        <label>Service ID</label>
+        <input id="ejs-sid" placeholder="service_xxxxxxx" value="${EJSCONFIG.serviceId}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Template Alerta (diferencia)</label>
+        <input id="ejs-ta" placeholder="template_xxxxxx" value="${EJSCONFIG.templateAlert}">
+      </div>
+      <div class="field">
+        <label>Template Reporte diario</label>
+        <input id="ejs-tr" placeholder="template_xxxxxx" value="${EJSCONFIG.templateReport}">
+      </div>
+    </div>
+    <p style="font-size:.75rem;color:#888;margin:.4rem 0 .8rem">
+      📩 Los reportes se enviarán a: <strong>${EJSCONFIG.adminEmail}</strong>
+    </p>
+    <button class="btn btn-primary" onclick="saveEmailConfig()">💾 Guardar configuración</button>
+  </div>
+
+  <div class="card" style="margin-top:.8rem">
+    <div class="card-head"><span class="card-title">📊 Reporte Manual</span></div>
+    <p style="font-size:.82rem;color:#555;margin-bottom:.8rem">
+      Genera y envía ahora el reporte del día para todos los locales (PDF + Excel).
+    </p>
+    <button class="btn btn-warning btn-full" onclick="reporteDiario(true)">📤 Enviar Reporte del Día Ahora</button>
+    <p style="font-size:.75rem;color:#888;margin-top:.5rem">
+      ⏰ El reporte también se enviará automáticamente a las 23:00 hrs.
+    </p>
+  </div>`;
 }
 </script>
 </body>
