@@ -47,6 +47,7 @@
       overscroll-behavior: none;
     }
 
+    /* ── LOADING ── */
     #loading {
       position: fixed; inset: 0;
       background: var(--navy);
@@ -54,14 +55,1436 @@
       align-items: center; justify-content: center;
       z-index: 9999; gap: 18px;
     }
+    .spinner {
+      width: 46px; height: 46px;
+      border: 4px solid rgba(255,255,255,0.08);
+      border-top-color: var(--red2);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; min-height: 100vh; }
+
+    /* ── LOGIN / REGISTER ── */
+    .auth-wrap {
+      flex: 1; display: flex;
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .login-card {
+      background: white; color: var(--navy);
+      border-radius: var(--radius);
+      padding: 38px 28px;
+      width: 100%; max-width: 390px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .logo-circle {
+      width: 76px; height: 76px;
+      background: var(--red);
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      box-shadow: 0 6px 20px rgba(192,57,43,0.45);
+    }
+    .login-card h1 { font-size: 23px; margin-bottom: 4px; }
+    .login-card .sub { color: var(--gray); font-size: 13px; margin-bottom: 26px; }
+
+    .form-group { margin-bottom: 16px; text-align: left; }
+    .form-group label { display: block; font-size: 11px; font-weight: 700; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .form-control {
+      width: 100%; padding: 13px 15px;
+      border: 2px solid #e4e4e4;
+      border-radius: var(--radius-sm);
+      font-size: 15px; color: var(--navy);
+      background: #f7f8fa; outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-control:focus { border-color: var(--red); background: white; }
+
+    .btn-primary {
+      width: 100%; padding: 14px;
+      background: var(--red); color: white;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary:hover { background: var(--red2); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary.secondary {
+      background: rgba(13,27,42,0.07);
+      color: var(--navy); border: 2px solid #ddd;
+      margin-top: 10px;
+    }
+    .btn-link { background: none; border: none; color: var(--red); font-size: 14px; cursor: pointer; padding: 8px 0; text-decoration: underline; }
+
+    /* ── HEADER ── */
+    .app-header {
+      background: rgba(11, 23, 38, 0.97);
+      backdrop-filter: blur(12px);
+      padding: 13px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-brand { display: flex; align-items: center; gap: 11px; }
+    .header-logo {
+      width: 38px; height: 38px;
+      background: var(--red);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header-title { font-size: 15px; font-weight: 700; line-height: 1.2; }
+    .header-subtitle { font-size: 11px; color: var(--gray); }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    .btn-icon {
+      background: rgba(255,255,255,0.07);
+      border: none; color: white;
+      width: 40px; height: 40px;
+      border-radius: 11px; font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; transition: background 0.2s;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.14); }
+
+    .badge {
+      position: absolute; top: -5px; right: -5px;
+      background: var(--red2); color: white;
+      font-size: 10px; font-weight: 800;
+      min-width: 18px; height: 18px;
+      border-radius: 9px; padding: 0 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── CONTENT ── */
+    .screen-content {
+      flex: 1; overflow-y: auto;
+      padding: 16px; padding-bottom: 96px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 11px; font-weight: 700;
+      color: var(--gray); text-transform: uppercase;
+      letter-spacing: 1.2px; margin-bottom: 12px; margin-top: 4px;
+    }
+
+    /* ── PEDIDO CARDS ── */
+    .pedido-card {
+      background: rgba(255,255,255,0.055);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-left: 4px solid transparent;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .pedido-card:active { background: rgba(255,255,255,0.1); }
+    .pedido-card.pendiente { border-left-color: var(--orange); }
+    .pedido-card.revisado  { border-left-color: var(--yellow); }
+    .pedido-card.entregado { border-left-color: var(--green); }
+
+    .pedido-card-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 7px;
+    }
+    .local-tag {
+      background: rgba(192,57,43,0.22);
+      color: var(--red-light);
+      padding: 3px 11px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+    }
+    .status-chip {
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .status-chip.pendiente { background: rgba(230,126,34,0.18); color: #f39c12; }
+    .status-chip.revisado  { background: rgba(241,196,15,0.18); color: #f1c40f; }
+    .status-chip.entregado { background: rgba(39,174,96,0.18);  color: var(--green2); }
+
+    .pedido-fecha    { font-size: 12px; color: var(--gray); margin-bottom: 5px; }
+    .pedido-cliente  { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .pedido-productos{ font-size: 13px; color: rgba(255,255,255,0.68); }
+
+    /* ── BUTTONS IN CARDS ── */
+    .card-btn {
+      width: 100%; margin-top: 10px; padding: 11px;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .card-btn:active { opacity: 0.8; }
+    .card-btn.green  { background: var(--green);  color: white; }
+    .card-btn.orange { background: var(--orange); color: white; }
+    .card-btn.blue   { background: var(--blue);   color: white; }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed; bottom: 26px; right: 22px;
+      width: 62px; height: 62px;
+      background: var(--red); color: white;
+      font-size: 30px; border: none; border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(192,57,43,0.55);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s; z-index: 50;
+    }
+    .fab:active { transform: scale(0.9); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center; padding: 52px 24px;
+      color: var(--gray); font-size: 15px; line-height: 2;
+    }
+    .empty-state .icon { font-size: 50px; display: block; margin-bottom: 10px; }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.065);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: var(--radius);
+      padding: 18px; text-align: center;
+    }
+    .stat-number { font-size: 34px; font-weight: 900; line-height: 1; }
+    .stat-label  { font-size: 11px; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card.orange .stat-number { color: var(--orange); }
+    .stat-card.yellow .stat-number { color: var(--yellow); }
+    .stat-card.green  .stat-number { color: var(--green2); }
+    .stat-card.blue   .stat-number { color: var(--blue); }
+
+    /* ── MODAL BOTTOM SHEET ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 200; display: none;
+      align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      background: var(--navy2);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%; max-height: 92vh;
+      overflow-y: auto; padding: 20px 20px 36px;
+      animation: slideUp 0.28s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle {
+      width: 42px; height: 4px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 2px; margin: 0 auto 22px;
+    }
+    .modal-title { font-size: 19px; font-weight: 800; margin-bottom: 20px; }
+
+    /* ── DARK FORM (inside modal) ── */
+    .fgd { margin-bottom: 18px; }
+    .fgd label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: var(--gray); margin-bottom: 7px;
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .fgd-ctrl {
+      width: 100%; padding: 13px 15px;
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid rgba(255,255,255,0.11);
+      border-radius: var(--radius-sm);
+      color: white; font-size: 15px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .fgd-ctrl:focus { border-color: var(--red2); }
+    .fgd-ctrl option { background: var(--navy2); }
+    textarea.fgd-ctrl { resize: none; }
+
+    /* ── DATE SELECTOR ── */
+    .date-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .date-option {
+      padding: 14px; border-radius: var(--radius-sm);
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      cursor: pointer; text-align: center; transition: all 0.2s;
+    }
+    .date-option.sel { border-color: var(--red2); background: rgba(192,57,43,0.18); }
+    .date-option .dl { font-size: 14px; font-weight: 700; }
+    .date-option .ds { font-size: 11px; color: var(--gray); margin-top: 3px; }
+
+    /* ── TRAMO SELECTOR ── */
+    .tramo-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tramo-btn {
+      padding: 9px 16px; border-radius: 22px;
+      border: 2px solid rgba(255,255,255,0.11);
+      background: rgba(255,255,255,0.05);
+      color: white; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .tramo-btn.sel { border-color: var(--red2); background: rgba(192,57,43,0.2); }
+    .tramo-btn[disabled] { opacity: 0.38; cursor: not-allowed; }
+
+    /* ── PRODUCT ROWS ── */
+    .prod-row {
+      display: flex; align-items: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius-sm);
+      padding: 11px 13px; margin-bottom: 8px;
+      transition: background 0.2s;
+    }
+    .prod-row.active { background: rgba(192,57,43,0.15); }
+    .prod-name { flex: 1; font-size: 14px; }
+    .qty-ctrl { display: flex; align-items: center; gap: 10px; }
+    .qty-btn {
+      width: 34px; height: 34px;
+      border: none; border-radius: 9px;
+      font-size: 20px; font-weight: 700;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .qty-btn.minus { background: rgba(231,76,60,0.18); color: var(--red-light); }
+    .qty-btn.plus  { background: rgba(39,174,96,0.18);  color: var(--green2); }
+    .qty-num { font-size: 17px; font-weight: 800; min-width: 22px; text-align: center; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 16px; scrollbar-width: none; }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .f-chip {
+      padding: 7px 16px; border-radius: 22px;
+      border: 1.5px solid rgba(255,255,255,0.13);
+      background: none; color: var(--gray);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .f-chip.active { background: var(--red); border-color: var(--red); color: white; }
+
+    /* ── TAB BAR ── */
+    .tab-bar {
+      display: flex; background: rgba(0,0,0,0.22);
+      border-radius: var(--radius); padding: 4px;
+      margin-bottom: 20px; gap: 4px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 6px;
+      background: none; border: none;
+      color: var(--gray); font-size: 12px; font-weight: 700;
+      border-radius: 12px; cursor: pointer; transition: all 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .tab-btn.active { background: rgba(255,255,255,0.1); color: white; }
+
+    /* ── TRAMO MANAGER ── */
+    .tramo-item {
+      display: flex; align-items: center;
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px; margin-bottom: 9px;
+    }
+    .tramo-time { flex: 1; font-size: 15px; font-weight: 700; }
+    .toggle {
+      width: 46px; height: 26px;
+      background: rgba(255,255,255,0.14);
+      border-radius: 13px; border: none;
+      cursor: pointer; position: relative; transition: background 0.3s;
+    }
+    .toggle.on { background: var(--green); }
+    .toggle::after {
+      content: ''; position: absolute;
+      left: 3px; top: 3px;
+      width: 20px; height: 20px;
+      background: white; border-radius: 50%;
+      transition: transform 0.28s;
+    }
+    .toggle.on::after { transform: translateX(20px); }
+
+    /* ── NOTIFICATION BANNER ── */
+    .notif-banner {
+      background: rgba(52,152,219,0.12);
+      border: 1px solid rgba(52,152,219,0.28);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .notif-banner span { flex:1; font-size: 12px; line-height: 1.5; }
+    .notif-banner button {
+      padding: 7px 13px; background: var(--blue);
+      color: white; border: none; border-radius: 8px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ── ALERT BANNER (NEW ORDER) ── */
+    #alert-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--red); color: white;
+      padding: 15px 20px; text-align: center;
+      font-weight: 700; font-size: 15px;
+      z-index: 400; transform: translateY(-100%);
+      transition: transform 0.32s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    #alert-banner.show { transform: translateY(0); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 96px; left: 50%;
+      transform: translateX(-50%) translateY(14px);
+      background: rgba(22, 34, 48, 0.97);
+      color: white; padding: 12px 22px;
+      border-radius: 26px; font-size: 14px; font-weight: 600;
+      opacity: 0; transition: all 0.28s; z-index: 1000;
+      white-space: nowrap; max-width: 90vw; pointer-events: none;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { border-left: 3px solid var(--green2); }
+    #toast.error   { border-left: 3px solid var(--red2); }
+    #toast.info    { border-left: 3px solid var(--blue); }
+
+    /* ── PULSE ANIMATION (new order card) ── */
+    @keyframes pulse-card {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.025); }
+    }
+    .new-order { animation: pulse-card 1.2s ease infinite; background: rgba(192,57,43,0.18) !important; border-left-color: var(--red) !important; }
+
+    /* ── CARD (summary) ── */
+    .card {
+      background: rgba(255,255,255,0.065);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 14px 0; }
+
+    /* scrollbar */
+    .modal-sheet::-webkit-scrollbar { width: 4px; }
+    .modal-sheet::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
   </style>
 </head>
 <body>
-  <div id="loading"><div style="font-size:40px;margin:20px;">🍞 Ricopan Clientes</div></div>
-  <div id="app"></div>
-  <script>
-    // Application is loading...
-    document.querySelector('#loading').innerHTML = '<div style="text-align:center;padding:40px;"><div style="font-size:40px;margin:20px;">🍞</div><h1>Clientes · Ricopan</h1><p>Sistema de gestión de pedidos para clientes</p></div>';
-  </script>
+
+<!-- ─────────────────── LOADING ─────────────────── -->
+<div id="loading">
+  <div class="logo-circle" style="width:80px;height:80px;font-size:36px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(192,57,43,0.5);">🍞</div>
+  <div class="spinner"></div>
+  <div style="color:var(--gray);font-size:13px;">Conectando…</div>
+</div>
+
+<!-- ─────────────────── TOAST ─────────────────── -->
+<div id="toast"></div>
+
+<!-- ─────────────────── ALERT BANNER ─────────────────── -->
+<div id="alert-banner"></div>
+
+<!-- ─────────────────── MODAL ─────────────────── -->
+<div id="modal-overlay" class="modal-overlay" onclick="maybeCloseModal(event)">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN: LOGIN
+═══════════════════════════════════════════════════ -->
+<div id="screen-login" class="screen">
+  <div class="auth-wrap">
+    <div class="login-card">
+      <div class="logo-circle">🍞</div>
+      <h1>Clientes · Ricopan</h1>
+      <p class="sub">Solicita tu pedido fácilmente</p>
+
+      <div class="form-group">
+        <label>Usuario</label>
+        <input id="login-user" class="form-control" type="text" placeholder="Ingresa tu usuario" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input id="login-pass" class="form-control" type="password" placeholder="Ingresa tu contraseña" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Ingresar</button>
+      <div style="margin-top:14px;">
+        <button class="btn-link" onclick="goTo('screen-register')">¿Cliente nuevo? Regístrate aquí</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN: REGISTER
+═══════════════════════════════════════════════════ -->
+<div id="screen-register" class="screen">
+  <div class="auth-wrap">
+    <div class="login-card">
+      <div class="logo-circle" style="background:#1b2838;font-size:28px;">👤</div>
+      <h1>Crear cuenta</h1>
+      <p class="sub">Únete como cliente Ricopan</p>
+
+      <div class="form-group">
+        <label>Nombre completo *</label>
+        <input id="reg-nombre" class="form-control" type="text" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label>Usuario * (sin espacios)</label>
+        <input id="reg-user" class="form-control" type="text" placeholder="Ej: juan_perez" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Contraseña * (mín. 6 car.)</label>
+        <input id="reg-pass" class="form-control" type="password" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>Teléfono (opcional)</label>
+        <input id="reg-tel" class="form-control" type="tel" placeholder="+56 9 XXXX XXXX">
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Crear cuenta</button>
+      <div style="margin-top:12px;">
+        <button class="btn-link" onclick="goTo('screen-login')">← Volver al login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN: CLIENTE
+═══════════════════════════════════════════════════ -->
+<div id="screen-cliente" class="screen">
+  <div class="app-header">
+    <div class="header-brand">
+      <div class="header-logo">🍞</div>
+      <div>
+        <div class="header-title" id="cli-title">Mis Pedidos</div>
+        <div class="header-subtitle">Clientes · Ricopan</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" onclick="logout()" title="Salir">🚪</button>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <div class="section-title">Pedidos activos</div>
+    <div id="cli-list">
+      <div class="empty-state"><span class="icon">📋</span>Cargando…</div>
+    </div>
+  </div>
+
+  <button class="fab" onclick="openNuevoPedido()" title="Nuevo pedido">+</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN: LOCAL (Receptor)
+═══════════════════════════════════════════════════ -->
+<div id="screen-local" class="screen">
+  <div class="app-header">
+    <div class="header-brand">
+      <div class="header-logo">📦</div>
+      <div>
+        <div class="header-title" id="loc-title">Pedidos</div>
+        <div class="header-subtitle" id="loc-subtitle">Ricopan · Local</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" id="bell-btn" onclick="askNotifPermission()" title="Notificaciones">
+        🔔
+        <span class="badge" id="badge-count" style="display:none">0</span>
+      </button>
+      <button class="btn-icon" onclick="logout()">🚪</button>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <div id="notif-banner" class="notif-banner" style="display:none;">
+      <span>🔔 Activa las notificaciones para recibir alertas de nuevos pedidos en tu celular</span>
+      <button onclick="askNotifPermission()">Activar</button>
+    </div>
+
+    <div class="filter-bar">
+      <button class="f-chip active" onclick="setLocFilter('todos',this)">Todos</button>
+      <button class="f-chip" onclick="setLocFilter('pendiente',this)">Pendientes</button>
+      <button class="f-chip" onclick="setLocFilter('revisado',this)">Revisados</button>
+      <button class="f-chip" onclick="setLocFilter('entregado',this)">Entregados</button>
+    </div>
+
+    <div class="section-title" id="loc-date-lbl"></div>
+    <div id="loc-list">
+      <div class="empty-state"><span class="icon">✅</span>Sin pedidos aún</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN: ADMIN
+═══════════════════════════════════════════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="app-header">
+    <div class="header-brand">
+      <div class="header-logo">⚙️</div>
+      <div>
+        <div class="header-title">Administración</div>
+        <div class="header-subtitle">Clientes · Ricopan</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" onclick="logout()">🚪</button>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="atab-resumen" onclick="adminTab('resumen')">Resumen</button>
+      <button class="tab-btn" id="atab-pedidos" onclick="adminTab('pedidos')">Pedidos</button>
+      <button class="tab-btn" id="atab-tramos"  onclick="adminTab('tramos')">Tramos</button>
+      <button class="tab-btn" id="atab-reporte" onclick="adminTab('reporte')">Reporte</button>
+    </div>
+
+    <!-- RESUMEN -->
+    <div id="atab-resumen-panel">
+      <div class="stats-grid">
+        <div class="stat-card orange"><div class="stat-number" id="st-total">–</div><div class="stat-label">Total hoy</div></div>
+        <div class="stat-card yellow"><div class="stat-number" id="st-pend">–</div><div class="stat-label">Pendientes</div></div>
+        <div class="stat-card blue">  <div class="stat-number" id="st-rev">–</div><div class="stat-label">Revisados</div></div>
+        <div class="stat-card green"> <div class="stat-number" id="st-ent">–</div><div class="stat-label">Entregados</div></div>
+      </div>
+      <div class="section-title">Por local · hoy</div>
+      <div id="adm-local-summ"></div>
+      <hr class="divider">
+      <button class="btn-primary" onclick="genPDF()">📊 Generar Reporte PDF</button>
+      <button class="btn-primary secondary" onclick="enviarEmail()">📧 Enviar Reporte por Email</button>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div id="atab-pedidos-panel" style="display:none;">
+      <div class="filter-bar">
+        <button class="f-chip active" onclick="setAdmFilter('todos',this)">Todos</button>
+        <button class="f-chip" onclick="setAdmFilter('pendiente',this)">Pendientes</button>
+        <button class="f-chip" onclick="setAdmFilter('revisado',this)">Revisados</button>
+        <button class="f-chip" onclick="setAdmFilter('entregado',this)">Entregados</button>
+      </div>
+      <div id="adm-ped-list"></div>
+    </div>
+
+    <!-- TRAMOS -->
+    <div id="atab-tramos-panel" style="display:none;">
+      <div class="section-title">Tramos de entrega activos</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;">
+        Los clientes solo ven tramos activos. Los tramos pasados del día actual no aparecen al pedir para hoy.
+      </p>
+      <div id="tramos-list"></div>
+      <button class="btn-primary" style="margin-top:16px;" onclick="openAddTramo()">+ Agregar tramo</button>
+    </div>
+
+    <!-- REPORTE POR FECHA -->
+    <div id="atab-reporte-panel" style="display:none;">
+      <div class="section-title">Reporte por fecha</div>
+      <div class="fgd" style="margin-bottom:16px;">
+        <label>Seleccionar fecha</label>
+        <input type="date" id="rep-fecha" class="fgd-ctrl" onchange="loadReporte()">
+      </div>
+      <div id="rep-content">
+        <div class="empty-state"><span class="icon">📅</span>Selecciona una fecha</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+/* ── FIREBASE CONFIG ── */
+const FB_CFG = {
+  apiKey:            "AIzaSyBs2LUVSVSWBwuzet8hqAhM4PUOatmDjIo",
+  authDomain:        "larusia-apps.firebaseapp.com",
+  databaseURL:       "https://larusia-apps-default-rtdb.firebaseio.com/",
+  projectId:         "larusia-apps",
+  storageBucket:     "larusia-apps.firebasestorage.app",
+  messagingSenderId: "196879088302",
+  appId:             "1:196879088302:web:8d20d5a8cb1ea46737cb3f"
+};
+firebase.initializeApp(FB_CFG);
+const db = firebase.database();
+
+/* ── STATE ── */
+let S = {
+  user:       null,
+  ejs:        null,
+  productos:  [],
+  locales:    {},
+  tramos:     {},
+  listeners:  [],      // { ref, event, cb }
+  locPedidos: {},      // cache for local screen
+  admPedidos: {},      // cache for admin screen
+  locFilter:  'todos',
+  admFilter:  'todos',
+  draft:      {},      // qty per product in new-order form
+  draftDate:  null,
+  draftTramo: null
+};
+
+/* ══════════════════════ BOOT ══════════════════════ */
+window.addEventListener('DOMContentLoaded', async () => {
+  // Auto-login from session
+  try {
+    const saved = localStorage.getItem('rc_cli_session');
+    if (saved) {
+      S.user = JSON.parse(saved);
+      await loadGlobal();
+      route();
+    } else {
+      goTo('screen-login');
+    }
+  } catch(e) {
+    goTo('screen-login');
+  } finally {
+    hide('loading');
+  }
+  // Enter key in login
+  $('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+});
+
+async function loadGlobal() {
+  const [ejs, prod, loc, tramos] = await Promise.all([
+    db.ref('/ricopan/config/emailjs').once('value'),
+    db.ref('/ricopan/productos').once('value'),
+    db.ref('/ricopan/locales').once('value'),
+    db.ref('/ricopan/tramos_horario').once('value')
+  ]);
+  S.ejs      = ejs.val();
+  S.productos = prod.val() || [];
+  S.locales  = loc.val() || {};
+  S.tramos   = tramos.val() || {};
+  if (S.ejs) emailjs.init(S.ejs.publicKey);
+}
+
+/* ══════════════════════ HELPERS ══════════════════════ */
+function $(id) { return document.getElementById(id); }
+function hide(id) { const el = $(id); if(el) el.style.display = 'none'; }
+function show(id, d='block') { const el = $(id); if(el) el.style.display = d; }
+
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+  const el = $(screenId);
+  if (el) el.style.display = 'flex';
+}
+
+function today()    { return new Date().toISOString().split('T')[0]; }
+function tomorrow() { const d = new Date(); d.setDate(d.getDate()+1); return d.toISOString().split('T')[0]; }
+function fmtDate(iso) { if(!iso) return ''; const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; }
+function nowMin()   { const n=new Date(); return n.getHours()*60 + n.getMinutes(); }
+function t2min(s)   { const [h,m]=s.split(':').map(Number); return h*60+m; }
+function sLabel(s)  { return {pendiente:'Pendiente',revisado:'Revisado',entregado:'Entregado'}[s]||s; }
+
+function addListener(ref, event, cb) {
+  ref.on(event, cb);
+  S.listeners.push({ref, event, cb});
+}
+function removeAllListeners() {
+  S.listeners.forEach(l => { try { l.ref.off(l.event, l.cb); } catch(e) {} });
+  S.listeners = [];
+}
+
+/* ══════════════════════ ROUTER ══════════════════════ */
+function route() {
+  const role = S.user?.role;
+  if      (role === 'cliente')                    initCliente();
+  else if (role === 'receptor')                   initLocal();
+  else if (role === 'admin' || role === 'encargado') initAdmin();
+  else { toast('Rol no permitido en esta app', 'error'); logout(); }
+}
+
+/* ══════════════════════ AUTH ══════════════════════ */
+async function doLogin() {
+  const uid  = $('login-user').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const pass = $('login-pass').value.trim();
+  if (!uid || !pass) return toast('Ingresa usuario y contraseña','error');
+  setLoad(true);
+  try {
+    const snap = await db.ref(`/ricopan/users/${uid}`).once('value');
+    const u = snap.val();
+    if (!u)         { setLoad(false); return toast('Usuario no encontrado','error'); }
+    if (u.pass!==pass){ setLoad(false); return toast('Contraseña incorrecta','error'); }
+    S.user = {id:uid, ...u};
+    localStorage.setItem('rc_cli_session', JSON.stringify(S.user));
+    await loadGlobal();
+    route();
+  } catch(e) { toast('Error de conexión','error'); }
+  setLoad(false);
+}
+
+async function doRegister() {
+  const nombre = $('reg-nombre').value.trim();
+  const uid    = $('reg-user').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const pass   = $('reg-pass').value.trim();
+  const tel    = $('reg-tel').value.trim();
+  if (!nombre||!uid||!pass) return toast('Completa los campos requeridos','error');
+  if (pass.length < 6)      return toast('Contraseña mínimo 6 caracteres','error');
+  if (!/^[a-z0-9_]+$/.test(uid)) return toast('Usuario: solo letras, números y _','error');
+  setLoad(true);
+  try {
+    const snap = await db.ref(`/ricopan/users/${uid}`).once('value');
+    if (snap.exists()) { setLoad(false); return toast('Ese usuario ya existe','error'); }
+    await db.ref(`/ricopan/users/${uid}`).set({
+      name: nombre, pass, role: 'cliente', telefono: tel||null, createdAt: Date.now()
+    });
+    S.user = {id:uid, name:nombre, role:'cliente', telefono:tel||null};
+    localStorage.setItem('rc_cli_session', JSON.stringify(S.user));
+    await loadGlobal();
+    toast('¡Bienvenido, '+nombre+'!','success');
+    route();
+  } catch(e) { toast('Error al registrar: '+e.message,'error'); }
+  setLoad(false);
+}
+
+function logout() {
+  removeAllListeners();
+  S.user = null;
+  localStorage.removeItem('rc_cli_session');
+  goTo('screen-login');
+}
+
+/* ══════════════════════════════════════════════════════
+   CLIENTE DASHBOARD
+══════════════════════════════════════════════════════ */
+function initCliente() {
+  goTo('screen-cliente');
+  $('cli-title').textContent = '¡Hola, ' + (S.user.name || S.user.id) + '!';
+
+  const ref = db.ref('/ricopan/pedidos').orderByChild('clienteId').equalTo(S.user.id);
+  const cb = snap => renderCliPedidos(snap.val() || {});
+  addListener(ref, 'value', cb);
+}
+
+function renderCliPedidos(data) {
+  const arr = Object.entries(data).sort((a,b) => b[1].createdAt - a[1].createdAt);
+  const c = $('cli-list');
+  if (!arr.length) {
+    c.innerHTML = `<div class="empty-state"><span class="icon">📋</span>No tienes pedidos aún.<br>Presiona <strong>+</strong> para hacer tu primer pedido.</div>`;
+    return;
+  }
+  c.innerHTML = arr.map(([id, p]) => {
+    const prods = (p.productos||[]).map(pr=>`${pr.cantidad}x ${pr.nombre}`).join(', ');
+    const loc   = S.locales[p.localId] || p.localId;
+    return `
+      <div class="pedido-card ${p.status}" onclick="cliDetalle('${id}')">
+        <div class="pedido-card-header">
+          <span class="local-tag">${loc}</span>
+          <span class="status-chip ${p.status}">${sLabel(p.status)}</span>
+        </div>
+        <div class="pedido-fecha">${fmtDate(p.fecha)} · ${p.tramoLabel||''}</div>
+        <div class="pedido-productos">${prods}</div>
+        ${p.observacion ? `<div class="pedido-fecha" style="margin-top:5px;">💬 ${p.observacion}</div>` : ''}
+        ${p.status==='revisado' ? `<button class="card-btn green" onclick="confirmarEntrega(event,'${id}')">✅ Confirmar que recibí el pedido</button>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function cliDetalle(id) {
+  db.ref(`/ricopan/pedidos/${id}`).once('value').then(snap => {
+    const p = snap.val(); if (!p) return;
+    const prods = (p.productos||[]).map(pr =>
+      `<div class="prod-row" style="cursor:default;"><span class="prod-name">${pr.nombre}</span><span class="qty-num">${pr.cantidad}</span></div>`
+    ).join('');
+    const tl = (p.timeline||[]).map(t =>
+      `<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:11px;color:var(--gray);">${new Date(t.timestamp).toLocaleString('es-CL')}</div>
+        <div style="font-size:13px;margin-top:2px;">${t.note}</div>
+      </div>`
+    ).join('');
+    openModal(`
+      <div class="modal-title">Detalle del pedido</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <span class="local-tag">${S.locales[p.localId]||p.localId}</span>
+        <span class="status-chip ${p.status}">${sLabel(p.status)}</span>
+      </div>
+      <div class="pedido-fecha" style="margin-bottom:14px;">${fmtDate(p.fecha)} · ${p.tramoLabel||''}</div>
+      <div class="section-title">Productos</div>
+      ${prods}
+      ${p.observacion ? `<div style="margin:10px 0;font-size:13px;color:var(--gray);">💬 ${p.observacion}</div>` : ''}
+      <hr class="divider">
+      <div class="section-title">Historial</div>
+      ${tl||'<div style="color:var(--gray);font-size:13px;">Sin historial</div>'}
+      ${p.status==='revisado' ? `<button class="card-btn green" style="margin-top:14px;" onclick="confirmarEntrega(event,'${id}');closeModal();">✅ Confirmar recibido</button>` : ''}
+    `);
+  });
+}
+
+async function confirmarEntrega(ev, id) {
+  if(ev) ev.stopPropagation();
+  await db.ref(`/ricopan/pedidos/${id}`).update({ status:'entregado', entregadoAt:Date.now() });
+  await db.ref(`/ricopan/pedidos/${id}/timeline`).push({
+    action:'entregado', note:`Cliente confirmó la recepción`,
+    timestamp:Date.now(), userId:S.user.id, userName:S.user.name||S.user.id
+  });
+  toast('¡Pedido confirmado! Gracias 🎉','success');
+}
+
+/* ══════════════════════════════════════════════════════
+   NUEVO PEDIDO (form modal)
+══════════════════════════════════════════════════════ */
+function openNuevoPedido() {
+  S.draft = {}; S.draftDate = null; S.draftTramo = null;
+
+  const locOpts = Object.entries(S.locales).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+  const prodRows = S.productos.map((p,i) => `
+    <div class="prod-row" id="pr-${i}">
+      <span class="prod-name">${p}</span>
+      <div class="qty-ctrl">
+        <button class="qty-btn minus" onclick="chgQty('${p.replace(/'/g,"\\'")}',${i},-1)">−</button>
+        <span class="qty-num" id="qn-${i}">0</span>
+        <button class="qty-btn plus"  onclick="chgQty('${p.replace(/'/g,"\\'")}',${i},+1)">+</button>
+      </div>
+    </div>`).join('');
+
+  const hoy = today(), man = tomorrow();
+
+  openModal(`
+    <div class="modal-title">📦 Nuevo Pedido</div>
+
+    <div class="fgd">
+      <label>Local de entrega *</label>
+      <select id="np-local" class="fgd-ctrl">
+        <option value="">Selecciona un local…</option>
+        ${locOpts}
+      </select>
+    </div>
+
+    <div class="fgd">
+      <label>Fecha de entrega *</label>
+      <div class="date-options">
+        <div class="date-option" id="do-hoy" onclick="selDate('hoy')">
+          <div class="dl">Hoy</div><div class="ds">${fmtDate(hoy)}</div>
+        </div>
+        <div class="date-option" id="do-man" onclick="selDate('manana')">
+          <div class="dl">Mañana</div><div class="ds">${fmtDate(man)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fgd">
+      <label>Tramo de entrega *</label>
+      <div class="tramo-wrap" id="tramo-wrap">
+        <span style="color:var(--gray);font-size:13px;">Primero selecciona una fecha</span>
+      </div>
+    </div>
+
+    <div class="fgd">
+      <label>Productos * (selecciona cantidades)</label>
+      ${prodRows}
+    </div>
+
+    <div class="fgd">
+      <label>Observación (opcional)</label>
+      <textarea id="np-obs" class="fgd-ctrl" rows="2" placeholder="Ej: dejar en recepción, sin cebolla…"></textarea>
+    </div>
+
+    <button class="btn-primary" style="margin-top:4px;" onclick="submitPedido()">✅ Confirmar pedido</button>
+  `);
+}
+
+function chgQty(prod, idx, delta) {
+  S.draft[prod] = Math.max(0, (S.draft[prod]||0) + delta);
+  const el = $(`qn-${idx}`);
+  if (el) el.textContent = S.draft[prod];
+  const row = $(`pr-${idx}`);
+  if (row) row.classList.toggle('active', S.draft[prod] > 0);
+}
+
+function selDate(which) {
+  S.draftDate = which;
+  document.querySelectorAll('.date-option').forEach(el => el.classList.remove('sel'));
+  $('do-'+(which==='hoy'?'hoy':'man')).classList.add('sel');
+  renderTramosForm(which==='hoy');
+}
+
+function renderTramosForm(isToday) {
+  S.draftTramo = null;
+  const arr = Object.entries(S.tramos).sort((a,b) => a[1].inicio.localeCompare(b[1].inicio));
+  if (!arr.length) {
+    $('tramo-wrap').innerHTML = '<span style="color:var(--gray);font-size:13px;">No hay tramos configurados</span>';
+    return;
+  }
+  const nm = nowMin();
+  const html = arr.map(([id, t]) => {
+    if (!t.activo) return '';
+    const dis = isToday && t2min(t.inicio) <= nm;
+    return `<button class="tramo-btn${dis?' disabled':''}" id="tb-${id}"
+      onclick="${dis?'':''}" ${dis?'disabled':''}
+      ${dis?'':` onclick="selTramo('${id}','${t.inicio} - ${t.fin}')"`}>
+      ${t.inicio} – ${t.fin}${dis?' 🚫':''}
+    </button>`;
+  }).filter(Boolean).join('');
+  $('tramo-wrap').innerHTML = html || '<span style="color:var(--gray);font-size:13px;">Sin tramos disponibles para hoy</span>';
+}
+
+function selTramo(id, label) {
+  S.draftTramo = {id, label};
+  document.querySelectorAll('.tramo-btn').forEach(el => el.classList.remove('sel'));
+  const tb = $(`tb-${id}`);
+  if (tb) tb.classList.add('sel');
+}
+
+async function submitPedido() {
+  const localId = $('np-local').value;
+  const obs     = $('np-obs').value.trim();
+  if (!localId)       return toast('Selecciona un local','error');
+  if (!S.draftDate)   return toast('Selecciona una fecha','error');
+  if (!S.draftTramo)  return toast('Selecciona un tramo de entrega','error');
+
+  const productos = Object.entries(S.draft)
+    .filter(([,q])=>q>0).map(([nombre,cantidad])=>({nombre,cantidad}));
+  if (!productos.length) return toast('Agrega al menos un producto','error');
+
+  const fecha = S.draftDate==='hoy' ? today() : tomorrow();
+  const pedido = {
+    clienteId:      S.user.id,
+    clienteNombre:  S.user.name || S.user.id,
+    clienteTel:     S.user.telefono || null,
+    localId, fecha,
+    tramoId:    S.draftTramo.id,
+    tramoLabel: S.draftTramo.label,
+    productos, observacion: obs||null,
+    status: 'pendiente', createdAt: Date.now(),
+    revisadoAt: null, entregadoAt: null,
+    timeline: [{
+      action:'creado', timestamp:Date.now(),
+      note:`Pedido creado por ${S.user.name||S.user.id}`,
+      userId:S.user.id, userName:S.user.name||S.user.id
+    }]
+  };
+
+  setLoad(true);
+  try {
+    const ref = await db.ref('/ricopan/pedidos').push(pedido);
+    closeModal();
+    toast('✅ Pedido enviado correctamente','success');
+    alertEmail(pedido, ref.key);
+  } catch(e) { toast('Error al enviar: '+e.message,'error'); }
+  setLoad(false);
+}
+
+async function alertEmail(p, key) {
+  if (!S.ejs) return;
+  const prods = p.productos.map(pr=>`${pr.cantidad}x ${pr.nombre}`).join(', ');
+  const loc   = S.locales[p.localId]||p.localId;
+  try {
+    await emailjs.send(S.ejs.serviceId, S.ejs.templateAlert, {
+      to_email:  S.ejs.adminEmail,
+      subject:   `🛒 Nuevo pedido para ${loc}`,
+      message:   `Nuevo pedido de ${p.clienteNombre}\nLocal: ${loc}\nFecha: ${fmtDate(p.fecha)} · ${p.tramoLabel}\nProductos: ${prods}${p.observacion?'\nObs: '+p.observacion:''}`,
+      from_name: 'Clientes Ricopan',
+      reply_to:  S.ejs.adminEmail
+    });
+  } catch(e) { /* silent */ }
+}
+
+/* ══════════════════════════════════════════════════════
+   LOCAL (RECEPTOR) DASHBOARD
+══════════════════════════════════════════════════════ */
+function localIdFor(u) {
+  if (u.local) return u.local;
+  if (u.id.startsWith('recep_')) return u.id.replace('recep_','');
+  return u.id;
+}
+
+function initLocal() {
+  const localId = localIdFor(S.user);
+  goTo('screen-local');
+  $('loc-title').textContent    = S.locales[localId] || localId;
+  $('loc-subtitle').textContent = 'Pedidos del día · Ricopan';
+  $('loc-date-lbl').textContent = `Pedidos de hoy · ${fmtDate(today())}`;
+
+  if (Notification.permission === 'default') show('notif-banner','flex');
+
+  // Real-time listener for this local's orders
+  const ref = db.ref('/ricopan/pedidos').orderByChild('localId').equalTo(localId);
+  let firstLoad = true;
+  const cb = snap => {
+    const data = snap.val() || {};
+    // Keep only today + tomorrow
+    const relevant = {};
+    Object.entries(data).forEach(([id,p]) => {
+      if (p.fecha===today() || p.fecha===tomorrow()) relevant[id]=p;
+    });
+    if (!firstLoad) detectNewOrders(relevant);
+    S.locPedidos = relevant;
+    firstLoad = false;
+    renderLocPedidos();
+  };
+  addListener(ref, 'value', cb);
+}
+
+function detectNewOrders(newData) {
+  Object.entries(newData).forEach(([id,p]) => {
+    if (!S.locPedidos[id] && p.status==='pendiente') {
+      playSound();
+      showBanner(`🛒 ¡Nuevo pedido de ${p.clienteNombre}!`);
+      pushNotif('🛒 Nuevo pedido – Ricopan',
+        `${p.clienteNombre} · ${p.tramoLabel} · ${(p.productos||[]).map(pr=>`${pr.cantidad}x ${pr.nombre}`).join(', ')}`);
+    }
+  });
+}
+
+function renderLocPedidos() {
+  const c = $('loc-list');
+  let arr = Object.entries(S.locPedidos).sort((a,b) => {
+    const ord = {pendiente:0,revisado:1,entregado:2};
+    if (ord[a[1].status]!==ord[b[1].status]) return ord[a[1].status]-ord[b[1].status];
+    return (a[1].tramoLabel||'').localeCompare(b[1].tramoLabel||'');
+  });
+  if (S.locFilter!=='todos') arr = arr.filter(([,p])=>p.status===S.locFilter);
+
+  // Badge
+  const pend = Object.values(S.locPedidos).filter(p=>p.status==='pendiente').length;
+  const badge = $('badge-count');
+  if (pend>0) { badge.style.display='flex'; badge.textContent=pend; } else hide('badge-count');
+
+  if (!arr.length) {
+    c.innerHTML=`<div class="empty-state"><span class="icon">✅</span>Sin pedidos ${S.locFilter!=='todos'?'con estado "'+sLabel(S.locFilter)+'"':''}</div>`;
+    return;
+  }
+  const todayStr = today();
+  c.innerHTML = arr.map(([id,p]) => {
+    const prods = (p.productos||[]).map(pr=>`${pr.cantidad}x ${pr.nombre}`).join(', ');
+    const isMañana = p.fecha !== todayStr;
+    return `
+      <div class="pedido-card ${p.status} ${p.status==='pendiente'?'new-order':''}">
+        <div class="pedido-card-header">
+          <div>
+            <div class="pedido-cliente">👤 ${p.clienteNombre}</div>
+            <div class="pedido-fecha">${isMañana?'📅 Mañana · ':''}${p.tramoLabel||''}</div>
+          </div>
+          <span class="status-chip ${p.status}">${sLabel(p.status)}</span>
+        </div>
+        <div class="pedido-productos" style="margin-top:6px;">${prods}</div>
+        ${p.observacion?`<div class="pedido-fecha" style="margin-top:6px;">💬 ${p.observacion}</div>`:''}
+        <div style="display:flex;gap:8px;">
+          ${p.status==='pendiente' ? `<button class="card-btn orange" style="flex:1;" onclick="marcarRevisado('${id}')">👁 Marcar revisado</button>` : ''}
+          ${p.status==='revisado'  ? `<button class="card-btn blue"   style="flex:1;" onclick="marcarEntregado('${id}')">📦 Marcar entregado</button>` : ''}
+          ${p.status==='entregado' ? `<div style="text-align:center;width:100%;margin-top:8px;font-size:13px;color:var(--green2);">✅ Entregado</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function marcarRevisado(id) {
+  await db.ref(`/ricopan/pedidos/${id}`).update({status:'revisado', revisadoAt:Date.now()});
+  await db.ref(`/ricopan/pedidos/${id}/timeline`).push({
+    action:'revisado', note:`Pedido revisado por ${S.user.name||S.user.id}`,
+    timestamp:Date.now(), userId:S.user.id, userName:S.user.name||S.user.id
+  });
+  toast('Pedido marcado como revisado','success');
+}
+
+async function marcarEntregado(id) {
+  await db.ref(`/ricopan/pedidos/${id}`).update({status:'entregado', entregadoAt:Date.now()});
+  await db.ref(`/ricopan/pedidos/${id}/timeline`).push({
+    action:'entregado', note:`Entregado por ${S.user.name||S.user.id}`,
+    timestamp:Date.now(), userId:S.user.id, userName:S.user.name||S.user.id
+  });
+  toast('Pedido marcado como entregado','success');
+}
+
+function setLocFilter(f, btn) {
+  S.locFilter = f;
+  document.querySelectorAll('#screen-local .f-chip').forEach(el=>el.classList.remove('active'));
+  btn.classList.add('active');
+  renderLocPedidos();
+}
+
+/* ══════════════════════════════════════════════════════
+   ADMIN DASHBOARD
+══════════════════════════════════════════════════════ */
+function initAdmin() {
+  goTo('screen-admin');
+  $('rep-fecha').value = today();
+  const ref = db.ref('/ricopan/pedidos');
+  const cb = snap => {
+    S.admPedidos = snap.val() || {};
+    updateAdmStats();
+    renderAdmPedidos();
+    renderAdmLocalSumm();
+  };
+  addListener(ref, 'value', cb);
+  loadTramosAdmin();
+}
+
+function adminTab(tab) {
+  ['resumen','pedidos','tramos','reporte'].forEach(t => {
+    $(`atab-${t}-panel`).style.display = t===tab ? 'block' : 'none';
+    $(`atab-${t}`).classList.toggle('active', t===tab);
+  });
+  if (tab==='tramos')  loadTramosAdmin();
+  if (tab==='reporte') loadReporte();
+}
+
+function updateAdmStats() {
+  const t = today();
+  const tod = Object.values(S.admPedidos).filter(p=>p.fecha===t);
+  $('st-total').textContent = tod.length;
+  $('st-pend').textContent  = tod.filter(p=>p.status==='pendiente').length;
+  $('st-rev').textContent   = tod.filter(p=>p.status==='revisado').length;
+  $('st-ent').textContent   = tod.filter(p=>p.status==='entregado').length;
+}
+
+function renderAdmLocalSumm() {
+  const t = today();
+  const tod = Object.entries(S.admPedidos).filter(([,p])=>p.fecha===t);
+  const byL = {};
+  tod.forEach(([,p]) => {
+    if(!byL[p.localId]) byL[p.localId]={total:0,pend:0,ent:0};
+    byL[p.localId].total++;
+    if(p.status!=='entregado') byL[p.localId].pend++;
+    if(p.status==='entregado') byL[p.localId].ent++;
+  });
+  const c = $('adm-local-summ');
+  if (!Object.keys(byL).length) { c.innerHTML='<div class="empty-state" style="padding:20px;"><span class="icon">📊</span>Sin pedidos hoy</div>'; return; }
+  c.innerHTML = Object.entries(byL).map(([lid,st])=>`
+    <div class="card" style="padding:14px;margin-bottom:10px;">
+      <div style="font-weight:800;margin-bottom:8px;">${S.locales[lid]||lid}</div>
+      <div style="display:flex;gap:16px;font-size:13px;">
+        <span>📦 <strong>${st.total}</strong></span>
+        <span style="color:var(--orange);">⏳ <strong>${st.pend}</strong></span>
+        <span style="color:var(--green2);">✅ <strong>${st.ent}</strong></span>
+      </div>
+    </div>`).join('');
+}
+
+function renderAdmPedidos() {
+  let arr = Object.entries(S.admPedidos).sort((a,b)=>b[1].createdAt-a[1].createdAt);
+  if(S.admFilter!=='todos') arr=arr.filter(([,p])=>p.status===S.admFilter);
+  const c=$('adm-ped-list');
+  if(!arr.length){c.innerHTML='<div class="empty-state"><span class="icon">📋</span>Sin pedidos</div>';return;}
+  c.innerHTML=arr.map(([id,p])=>{
+    const prods=(p.productos||[]).map(pr=>`${pr.cantidad}x ${pr.nombre}`).join(', ');
+    return `<div class="pedido-card ${p.status}">
+      <div class="pedido-card-header">
+        <span class="local-tag">${S.locales[p.localId]||p.localId}</span>
+        <span class="status-chip ${p.status}">${sLabel(p.status)}</span>
+      </div>
+      <div class="pedido-cliente">👤 ${p.clienteNombre}</div>
+      <div class="pedido-fecha">${fmtDate(p.fecha)} · ${p.tramoLabel||''}</div>
+      <div class="pedido-productos">${prods}</div>
+    </div>`;
+  }).join('');
+}
+
+function setAdmFilter(f, btn) {
+  S.admFilter=f;
+  document.querySelectorAll('#atab-pedidos-panel .f-chip').forEach(el=>el.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdmPedidos();
+}
+
+/* ══════════════════════════════════════════════════════
+   TRAMOS HORARIO (ADMIN)
+══════════════════════════════════════════════════════ */
+async function loadTramosAdmin() {
+  const snap = await db.ref('/ricopan/tramos_horario').once('value');
+  S.tramos = snap.val() || {};
+  renderTramosAdmin();
+}
+
+function renderTramosAdmin() {
+  const c = $('tramos-list');
+  const arr = Object.entries(S.tramos).sort((a,b)=>a[1].inicio.localeCompare(b[1].inicio));
+  if (!arr.length) { c.innerHTML='<div style="color:var(--gray);font-size:13px;text-align:center;padding:20px;">Sin tramos configurados</div>'; return; }
+  c.innerHTML = arr.map(([id,t])=>`
+    <div class="tramo-item">
+      <div class="tramo-time">🕐 ${t.inicio} – ${t.fin}</div>
+      <button class="toggle ${t.activo?'on':''}" onclick="toggleTramo('${id}',${!t.activo})"></button>
+    </div>`).join('');
+}
+
+async function toggleTramo(id, state) {
+  await db.ref(`/ricopan/tramos_horario/${id}/activo`).set(state);
+  S.tramos[id].activo = state;
+  renderTramosAdmin();
+  toast(`Tramo ${state?'activado':'desactivado'}`, 'success');
+}
+
+function openAddTramo() {
+  openModal(`
+    <div class="modal-title">➕ Nuevo tramo horario</div>
+    <div class="fgd">
+      <label>Hora inicio *</label>
+      <input type="time" id="nt-ini" class="fgd-ctrl">
+    </div>
+    <div class="fgd">
+      <label>Hora fin *</label>
+      <input type="time" id="nt-fin" class="fgd-ctrl">
+    </div>
+    <button class="btn-primary" style="margin-top:8px;" onclick="saveTramo()">Guardar tramo</button>
+  `);
+}
+
+async function saveTramo() {
+  const ini = $('nt-ini').value, fin = $('nt-fin').value;
+  if (!ini||!fin) return toast('Completa inicio y fin','error');
+  if (ini>=fin)   return toast('El inicio debe ser antes que el fin','error');
+  await db.ref('/ricopan/tramos_horario').push({inicio:ini,fin:fin,activo:true});
+  await loadTramosAdmin();
+  closeModal();
+  toast('Tramo creado','success');
+}
+
+/* ══════════════════════════════════════════════════════
+   REPORTE POR FECHA
+══════════════════════════════════════════════════════ */
+async function loadReporte() {
+  const fecha = $('rep-fecha').value;
+  if (!fecha) return;
+  const c = $('rep-content');
+  c.innerHTML='<div style="color:var(--gray);font-size:13px;text-align:center;padding:20px;">Cargando…</div>';
+  const snap = await db.ref('/ricopan/pedidos').orderByChild('fecha').equalTo(fecha).once('value');
+  const data = snap.val()||{};
+  const arr  = Object.entries(data);
+  if (!arr.length) { c.innerHTML='<div class="empty-state"><span class="icon">📅</span>Sin pedidos para esta fecha</div>'; return; }
+
+  const byL = {};
+  arr.forEach(([,p])=>{ if(!byL[p.localId]) byL[p.localId]=[]; byL[p.localId].push(p); });
+
+  let html = `<div style="font-size:13px;color:var(--gray);margin-bottom:16px;">Total pedidos: <strong style="color:white;">${arr.length}</strong></div>`;
+  Object.entries(byL).forEach(([lid,peds])=>{
+    const ent = peds.filter(p=>p.status==='entregado').length;
+    const prodSum = {};
+    peds.forEach(p=>(p.productos||[]).forEach(pr=>{ prodSum[pr.nombre]=(prodSum[pr.nombre]||0)+pr.cantidad; }));
+    html+=`
+      <div class="card" style="padding:14px;margin-bottom:12px;">
+        <div style="font-weight:800;font-size:16px;margin-bottom:6px;">${S.locales[lid]||lid}</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">${peds.length} pedidos · ${ent} entregados · ${peds.length-ent} pendientes</div>
+        ${Object.entries(prodSum).map(([nm,q])=>`
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;">
+            <span>${nm}</span><strong>${q}</strong>
+          </div>`).join('')}
+      </div>`;
+  });
+  html+=`<button class="btn-primary" style="margin-top:12px;" onclick="genPDF()">📊 Exportar PDF</button>
+         <button class="btn-primary secondary" onclick="enviarEmail()">📧 Enviar por Email</button>`;
+  c.innerHTML=html;
+}
+
+/* ══════════════════════════════════════════════════════
+   PDF REPORT
+══════════════════════════════════════════════════════ */
+function genPDF() {
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF();
+  const t = today();
+  const peds = Object.values(S.admPedidos).filter(p=>p.fecha===t);
+
+  doc.setFontSize(18); doc.setTextColor(13,27,42);
+  doc.text('Reporte de Pedidos · Ricopan', 14, 22);
+  doc.setFontSize(11); doc.setTextColor(100);
+  doc.text(`Fecha: ${fmtDate(t)}   Total: ${peds.length} pedidos`, 14, 32);
+
+  const byL={};
+  peds.forEach(p=>{ if(!byL[p.localId]) byL[p.localId]=[]; byL[p.localId].push(p); });
+
+  let y=42;
+  Object.entries(byL).forEach(([lid,arr])=>{
+    doc.setFontSize(13); doc.setTextColor(0);
+    doc.text(S.locales[lid]||lid, 14, y); y+=4;
+    doc.autoTable({
+      head:[['Cliente','Tramo','Productos','Estado']],
+      body: arr.map(p=>[
+        p.clienteNombre, p.tramoLabel||'-',
+        (p.productos||[]).map(pr=>`${pr.cantidad}x ${pr.nombre}`).join(', '),
+        sLabel(p.status)
+      ]),
+      startY:y, theme:'grid', styles:{fontSize:9},
+      headStyles:{fillColor:[192,57,43]}
+    });
+    y = doc.lastAutoTable.finalY+12;
+  });
+  doc.save(`reporte_ricopan_${t}.pdf`);
+  toast('PDF generado','success');
+}
+
+async function enviarEmail() {
+  if (!S.ejs) return toast('Config de email no disponible','error');
+  const t = today();
+  const peds = Object.values(S.admPedidos).filter(p=>p.fecha===t);
+  const byL={};
+  peds.forEach(p=>{ if(!byL[p.localId]) byL[p.localId]={total:0,ent:0}; byL[p.localId].total++; if(p.status==='entregado') byL[p.localId].ent++; });
+  let msg=`Reporte ${fmtDate(t)}\nTotal: ${peds.length} pedidos\n\n`;
+  Object.entries(byL).forEach(([lid,s])=>{ msg+=`${S.locales[lid]||lid}: ${s.total} pedidos, ${s.ent} entregados\n`; });
+  setLoad(true);
+  try {
+    await emailjs.send(S.ejs.serviceId, S.ejs.templateReport, {
+      to_email: S.ejs.adminEmail, subject:`📊 Reporte Pedidos · ${fmtDate(t)}`,
+      message: msg, from_name:'Clientes Ricopan', reply_to: S.ejs.adminEmail
+    });
+    toast('Reporte enviado por email','success');
+  } catch(e) { toast('Error al enviar email','error'); }
+  setLoad(false);
+}
+
+/* ══════════════════════════════════════════════════════
+   NOTIFICATIONS
+══════════════════════════════════════════════════════ */
+function askNotifPermission() {
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){ hide('notif-banner'); toast('✅ Notificaciones activadas','success'); }
+  });
+}
+function pushNotif(title, body) {
+  if (!('Notification' in window) || Notification.permission!=='granted') return;
+  new Notification(title, {body, icon:'🍞'});
+}
+function playSound() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [0,220,440].forEach(delay=>{
+      setTimeout(()=>{
+        const o=ctx.createOscillator(), g=ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value=880; o.type='sine';
+        g.gain.setValueAtTime(0.3, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.28);
+        o.start(ctx.currentTime); o.stop(ctx.currentTime+0.28);
+      }, delay);
+    });
+  } catch(e){}
+}
+function showBanner(msg) {
+  const b=$('alert-banner'); b.textContent=msg; b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'), 5000);
+}
+
+/* ══════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════ */
+let _tt;
+function toast(msg, type='info') {
+  const el=$('toast'); el.textContent=msg; el.className='show '+type;
+  clearTimeout(_tt); _tt=setTimeout(()=>{ el.className=''; },3200);
+}
+
+/* ══════════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════════ */
+function openModal(html) {
+  $('modal-body').innerHTML=html;
+  $('modal-overlay').classList.add('open');
+}
+function closeModal() { $('modal-overlay').classList.remove('open'); }
+function maybeCloseModal(e) { if(e.target===$('modal-overlay')) closeModal(); }
+
+/* ══════════════════════════════════════════════════════
+   LOADING OVERLAY
+══════════════════════════════════════════════════════ */
+function setLoad(show) { $('loading').style.display = show?'flex':'none'; }
+</script>
 </body>
 </html>
