@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Control de Envíos - Ricopan</title>
+  <title>Ricopan | Control de Envíos</title>
+  <meta property="og:title" content="Ricopan | Control de Envíos">
+  <meta property="og:description" content="Ricopan - Control de Envíos">
+  <meta property="og:image" content="https://oscarm-controldegestion.github.io/ricopan-envios/logo.jpg">
+  <meta property="og:url" content="https://oscarm-controldegestion.github.io/ricopan-envios/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -41,6 +47,9 @@
     .header-left{display:flex;align-items:center;gap:.6rem}
     .header-icon{font-size:1.5rem}
     .header-title{font-size:1rem;font-weight:700}
+    .login-logo{width:140px;height:auto;display:block;margin:0 auto .5rem;border-radius:8px}
+    .login-frase{font-size:.82rem;color:#c0392b;font-style:italic;font-weight:600;margin-bottom:1rem;line-height:1.4;padding:0 .5rem}
+    .header-logo{height:32px;width:auto;border-radius:5px;background:#fff;padding:2px 5px;margin-right:2px;vertical-align:middle}
     .header-right{display:flex;align-items:center;gap:.75rem}
     .header-user{font-size:.78rem;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
     #logout-btn{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;cursor:pointer}
@@ -184,9 +193,9 @@
 <!-- LOGIN -->
 <div id="login-screen" style="display:none">
   <div class="login-card">
-    <div class="login-icon">🍞</div>
+    <img src="logo.jpg" class="login-logo" alt="Ricopan">
+    <p class="login-frase">"Cada día que trabajamos con pasión,<br>construimos juntos un Ricopan más grande" 🚀</p>
     <h1>Control de Envíos</h1>
-    <p>Ricopan</p>
     <div class="error-msg" id="login-err"></div>
     <div class="form-group">
       <label>Usuario</label>
@@ -204,7 +213,7 @@
 <div id="app-screen">
   <header>
     <div class="header-left">
-      <span class="header-icon">🍞</span>
+      <img src="logo.jpg" class="header-logo" alt="Ricopan">
       <span class="header-title">Ricopan · Envíos</span>
     </div>
     <div class="header-right">
