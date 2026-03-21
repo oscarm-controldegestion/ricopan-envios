@@ -465,8 +465,42 @@ function envioCard(id, e) {
       </div>
       ${badge(e.status)}
     </div>
+  <div class="card" style="margin-top:.8rem">
+    <div class="card-head"><span class="card-title">⬇️ Descargar Reporte</span></div>
+    <p style="font-size:.82rem;color:#555;margin-bottom:.8rem">Descarga el reporte de cualquier día en PDF o Excel sin necesidad de email.</p>
+    <div class="form-row">
+      <div class="field"><label>Fecha</label><input type="date" id="rep-fecha" value="${new Date().toISOString().slice(0,10)}"></div>
+      <div class="field"><label>Local</label><select id="rep-local"><option value="">— Todos los locales —</option>${Object.entries(DATA.locales).map(([id,n])=>'<option value="'+id+'">'+n+'</option>').join('')}</select></div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
+      <button class="btn btn-danger" onclick="descargarReporte('pdf')">&#128196; Descargar PDF</button>
+      <button class="btn btn-success" onclick="descargarReporte('excel')">&#128202; Descargar Excel</button>
+    </div>
+  </div>
   </div>`;
 }
+function descargarReporte(tipo) {
+  const fechaInput = document.getElementById('rep-fecha');
+  const localInput = document.getElementById('rep-local');
+  const fecha = fechaInput ? fechaInput.value : new Date().toISOString().slice(0,10);
+  const localId = localInput ? localInput.value : '';
+  if (!fecha) { alert('Selecciona una fecha'); return; }
+  const [y,m,d] = fecha.split('-');
+  const inicio = new Date(+y,+m-1,+d,0,0,0).getTime();
+  const fin = new Date(+y,+m-1,+d,23,59,59).getTime();
+  let enviosFiltrados = Object.entries(DATA.envios).filter(([,e])=> e.createdAt>=inicio && e.createdAt<=fin);
+  const localNombre = localId ? (DATA.locales[localId]||localId) : 'Todos los locales';
+  if (localId) enviosFiltrados = enviosFiltrados.filter(([,e])=> e.senderLocal===localId || e.destinoLocal===localId);
+  if (!enviosFiltrados.length) { alert('No hay envíos para esa fecha/local'); return; }
+  if (tipo === 'pdf') {
+    const doc = generarPDFReporte(fecha, localId||'todos', localNombre, enviosFiltrados);
+    doc.save('reporte_'+fecha+'_'+(localId||'todos')+'.pdf');
+  } else {
+    const wb = generarExcelReporte(fecha, localId||'todos', localNombre, enviosFiltrados);
+    XLSX.writeFile(wb, 'reporte_'+fecha+'_'+(localId||'todos')+'.xlsx');
+  }
+}
+
 
 // ---- DASHBOARD ----
 function renderDashboard() {
@@ -838,6 +872,7 @@ function adminTab(tab, el) {
         <td>${roleLabel(u.role)}</td>
         <td>${u.local?(L[u.local]||u.local):'-'}</td>
         <td><code>${u.pass}</code></td>
+        <td style="white-space:nowrap"><button class="btn btn-warning btn-sm" onclick="editUser('${id}')">&#9998; Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteUser('${id}')">&#128465;</button></td>
       </tr>`).join('');
     c.innerHTML = `<div class="card">
       <div class="card-head"><span class="card-title">Usuarios</span>
@@ -866,7 +901,7 @@ function adminTab(tab, el) {
           <button class="btn btn-outline" onclick="document.getElementById('new-u').style.display='none'">Cancelar</button>
         </div>
       </div>
-      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>Contraseña</th></tr></thead>
+      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>Contraseña</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table>
     </div>`;
 
@@ -914,6 +949,46 @@ async function saveUser() {
   if (DATA.users[u]) { alert('Ese usuario ya existe'); return; }
   await DB.ref(`ricopan/users/${u}`).set({ name:n, pass:p, role:r, local:l||null });
   alert('✅ Usuario creado');
+  adminTab('usuarios', document.querySelector('.tab-btn.on'));
+}
+async function editUser(id) {
+  const u = DATA.users[id]; if (!u) return;
+  const L = DATA.locales;
+  const ef = document.getElementById('edit-u-form'); if (ef) ef.remove();
+  const lOpts = Object.entries(L).map(([k,v])=>'<option value="'+k+'"'+(u.local===k?' selected':'')+'>'+v+'</option>').join('');
+  const rOpts = ['admin','encargado','conductor','receptor'].map(r=>'<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+roleLabel(r)+'</option>').join('');
+  const showLocal = ['encargado','receptor'].includes(u.role);
+  const form = document.createElement('div');
+  form.id = 'edit-u-form'; form.className = 'adm-form';
+  form.style.cssText = 'margin-top:.5rem;border-top:2px solid #c0392b;padding-top:.75rem';
+  form.innerHTML =
+    '<div style="font-size:.85rem;font-weight:700;color:#c0392b;margin-bottom:.5rem">✎ Editando: '+u.name+'</div>'+
+    '<div class="form-row" style="gap:.5rem">'+
+    '<div class="field"><label>Nombre</label><input id="eu-n" value="'+u.name+'"></div>'+
+    '<div class="field"><label>Contraseña</label><input id="eu-p" value="'+u.pass+'"></div>'+
+    '<div class="field"><label>Rol</label><select id="eu-r">'+rOpts+'</select></div>'+
+    '<div class="field" id="eu-l-w" style="display:'+(showLocal?'':'none')+'">'+'<label>Local</label><select id="eu-l">'+lOpts+'</select></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:.5rem">'+'<button class="btn btn-success" onclick="updateUser(\''+id+'\')">✅ Guardar</button>'+'<button class="btn btn-outline" onclick="document.getElementById(\'edit-u-form\').remove()">Cancelar</button>'+'</div>';
+  const tbl = document.querySelector('#admin-content table');
+  if (tbl) tbl.parentNode.insertBefore(form, tbl); else document.querySelector('#admin-content .card').appendChild(form);
+}
+async function updateUser(id) {
+  const n = document.getElementById('eu-n').value.trim();
+  const p = document.getElementById('eu-p').value.trim();
+  const r = document.getElementById('eu-r').value;
+  const lw = document.getElementById('eu-l-w');
+  const l = (lw && lw.style.display !== 'none') ? document.getElementById('eu-l').value : null;
+  if (!n||!p||!r) { alert('Completa todos los campos'); return; }
+  await DB.ref('ricopan/users/'+id).update({ name:n, pass:p, role:r, local:l||null });
+  alert('✅ Usuario actualizado');
+  adminTab('usuarios', document.querySelector('.tab-btn.on'));
+}
+async function deleteUser(id) {
+  if (id === CU.id) { alert('No puedes eliminar tu propio usuario'); return; }
+  const u = DATA.users[id]; if (!u) return;
+  if (!confirm('¿Eliminar usuario "'+u.name+'"?')) return;
+  await DB.ref('ricopan/users/'+id).remove();
   adminTab('usuarios', document.querySelector('.tab-btn.on'));
 }
 async function addLocal() {
