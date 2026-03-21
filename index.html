@@ -883,7 +883,7 @@ function adminTab(tab, el) {
   } else if (tab==='productos') {
     const rows = P.map((p,i)=>`
       <tr><td>${p}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="delProducto(${i})">Eliminar</button></td></tr>`).join('');
+      <td style="white-space:nowrap"><button class="btn btn-warning btn-sm" onclick="editProducto(${i})">&#9998; Editar</button> <button class="btn btn-danger btn-sm" onclick="delProducto(${i})">&#128465;</button></td></tr>`).join('');
     c.innerHTML = `<div class="card">
       <div class="card-head"><span class="card-title">Productos</span>
         <button class="btn btn-primary btn-sm" onclick="addProducto()">+ Agregar</button></div>
@@ -938,6 +938,15 @@ async function delProducto(i) {
   const p = [...(DATA.productos||[])];
   p.splice(i,1);
   await DB.ref('ricopan/productos').set(p);
+  adminTab('productos', document.querySelector('.tab-btn.on'));
+}
+async function editProducto(i) {
+  const actual = (DATA.productos||[])[i];
+  const n = prompt(`Nuevo nombre para "${actual}":`, actual);
+  if (!n || !n.trim() || n.trim()===actual) return;
+  const arr = [...(DATA.productos||[])];
+  arr[i] = n.trim();
+  await DB.ref('ricopan/productos').set(arr);
   adminTab('productos', document.querySelector('.tab-btn.on'));
 }
 async function limpiarCompletados() {
