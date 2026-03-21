@@ -465,18 +465,6 @@ function envioCard(id, e) {
       </div>
       ${badge(e.status)}
     </div>
-  <div class="card" style="margin-top:.8rem">
-    <div class="card-head"><span class="card-title">⬇️ Descargar Reporte</span></div>
-    <p style="font-size:.82rem;color:#555;margin-bottom:.8rem">Descarga el reporte de cualquier día en PDF o Excel sin necesidad de email.</p>
-    <div class="form-row">
-      <div class="field"><label>Fecha</label><input type="date" id="rep-fecha" value="${new Date().toISOString().slice(0,10)}"></div>
-      <div class="field"><label>Local</label><select id="rep-local"><option value="">— Todos los locales —</option>${Object.entries(DATA.locales).map(([id,n])=>'<option value="'+id+'">'+n+'</option>').join('')}</select></div>
-    </div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
-      <button class="btn btn-danger" onclick="descargarReporte('pdf')">&#128196; Descargar PDF</button>
-      <button class="btn btn-success" onclick="descargarReporte('excel')">&#128202; Descargar Excel</button>
-    </div>
-  </div>
   </div>`;
 }
 function descargarReporte(tipo) {
