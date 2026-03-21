@@ -496,8 +496,14 @@ function descargarReporte(tipo) {
     const doc = generarPDFReporte(fecha, localId||'todos', localNombre, enviosFiltrados);
     doc.save('reporte_'+fecha+'_'+(localId||'todos')+'.pdf');
   } else {
-    const wb = generarExcelReporte(fecha, localId||'todos', localNombre, enviosFiltrados);
-    XLSX.writeFile(wb, 'reporte_'+fecha+'_'+(localId||'todos')+'.xlsx');
+    var b64 = generarExcelReporte(fecha, localId||'todos', localNombre, enviosFiltrados);
+    var bytes = atob(b64);
+    var arr = new Uint8Array(bytes.length);
+    for(var i=0;i<bytes.length;i++) arr[i]=bytes.charCodeAt(i);
+    var blob = new Blob([arr],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'reporte_'+fecha+'_'+(localId||'todos')+'.xlsx';
+    a.click(); URL.revokeObjectURL(a.href);
   }
 }
 
