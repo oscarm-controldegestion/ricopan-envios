@@ -4,24 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Ricopan | Control de Envíos</title>
-  <meta property="og:title" content="Ricopan | Control de Envíos">
-  <meta property="og:description" content="Ricopan - Control de Envíos">
+  <title>Ricopan | Control de EnvÃ­os</title>
+  <meta property="og:title" content="Ricopan | Control de EnvÃ­os">
+  <meta property="og:description" content="Ricopan - Control de EnvÃ­os">
   <meta property="og:image" content="https://oscarm-controldegestion.github.io/ricopan-control-de-compras/logo.png">
   <meta property="og:url" content="https://oscarm-controldegestion.github.io/ricopan-envios/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- Supabase + Firebase shim -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = 'https://yfcntevxlihsljqxlsop.supabase.co';
+    window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmY250ZXZ4bGloc2xqcXhsc29wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NDk4OTYsImV4cCI6MjA5MjEyNTg5Nn0.Vn2tbbTKxM4qFW0-twbJc5jpDNmA9P0U30qkZO9eDWk';
+  </script>
+  <script src="supabase-firebase-shim.js"></script>
 
   <!-- jsPDF para exportar -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <!-- SheetJS para Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <!-- EmailJS para envío de correos -->
+  <!-- EmailJS para envÃ­o de correos -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
@@ -185,7 +190,7 @@
 
 <!-- LOADING -->
 <div id="loading-overlay">
-  <div class="spin">🔄</div>
+  <div class="spin">ð</div>
   <div style="font-size:1.1rem;font-weight:600">Conectando...</div>
   <div style="font-size:.82rem;opacity:.7;margin-top:.4rem">Cargando datos desde la nube</div>
 </div>
@@ -194,16 +199,16 @@
 <div id="login-screen" style="display:none">
   <div class="login-card">
     <img src="https://oscarm-controldegestion.github.io/ricopan-control-de-compras/logo.png" class="login-logo" alt="Ricopan">
-    <p class="login-frase">"Cada día que trabajamos con pasión,<br>construimos juntos un Ricopan más grande" 🚀</p>
-    <h1>Control de Envíos</h1>
+    <p class="login-frase">"Cada dÃ­a que trabajamos con pasiÃ³n,<br>construimos juntos un Ricopan mÃ¡s grande" ð</p>
+    <h1>Control de EnvÃ­os</h1>
     <div class="error-msg" id="login-err"></div>
     <div class="form-group">
       <label>Usuario</label>
       <input type="text" id="u-user" placeholder="Ingrese usuario" autocomplete="off">
     </div>
     <div class="form-group">
-      <label>Contraseña</label>
-      <input type="password" id="u-pass" placeholder="Ingrese contraseña">
+      <label>ContraseÃ±a</label>
+      <input type="password" id="u-pass" placeholder="Ingrese contraseÃ±a">
     </div>
     <button class="btn-login" onclick="doLogin()">Ingresar</button>
   </div>
@@ -214,7 +219,7 @@
   <header>
     <div class="header-left">
       <img src="https://oscarm-controldegestion.github.io/ricopan-control-de-compras/logo.png" class="header-logo" alt="Ricopan">
-      <span class="header-title">Ricopan · Envíos</span>
+      <span class="header-title">Ricopan Â· EnvÃ­os</span>
     </div>
     <div class="header-right">
       <span class="header-user" id="hdr-user"></span>
@@ -230,9 +235,9 @@
 
     <!-- NUEVO ENVIO -->
     <div id="pg-nuevo" class="page">
-      <button class="back-btn" onclick="goTo('dashboard')">← Volver</button>
+      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
       <div class="card">
-        <div class="card-title" style="margin-bottom:1.2rem">📦 Nuevo Envío</div>
+        <div class="card-title" style="margin-bottom:1.2rem">ð¦ Nuevo EnvÃ­o</div>
         <div class="form-row">
           <div class="field">
             <label>Local Destino *</label>
@@ -244,7 +249,7 @@
           </div>
         </div>
         <div class="field">
-          <label>Observación (opcional)</label>
+          <label>ObservaciÃ³n (opcional)</label>
           <textarea id="n-nota" placeholder="Instrucciones o notas..."></textarea>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
@@ -252,20 +257,20 @@
           <button class="btn btn-outline btn-sm" onclick="addProdRow()">+ Agregar</button>
         </div>
         <div id="prods-list"></div>
-        <button class="btn btn-primary btn-full" style="margin-top:.75rem" onclick="crearEnvio()">✈️ Crear Envío</button>
+        <button class="btn btn-primary btn-full" style="margin-top:.75rem" onclick="crearEnvio()">âï¸ Crear EnvÃ­o</button>
       </div>
     </div>
 
     <!-- DETALLE ENVIO -->
     <div id="pg-detalle" class="page">
-      <button class="back-btn" onclick="goTo('dashboard')">← Volver</button>
+      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
       <div id="detalle-content"></div>
     </div>
 
     <!-- ADMIN -->
     <div id="pg-admin" class="page">
-      <button class="back-btn" onclick="goTo('dashboard')">← Volver</button>
-      <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">⚙️ Administración</div>
+      <button class="back-btn" onclick="goTo('dashboard')">â Volver</button>
+      <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">âï¸ AdministraciÃ³n</div>
       <div class="tabs">
         <button class="tab-btn on" onclick="adminTab('usuarios',this)">Usuarios</button>
         <button class="tab-btn" onclick="adminTab('locales',this)">Locales</button>
@@ -282,37 +287,21 @@
      FIREBASE CONFIG - RELLENA CON TUS DATOS
      ============================================================ -->
 <script>
-const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyBs2LUVSVSWBwuzet8hqAhM4PUOatmDjIo",
-  authDomain:        "larusia-apps.firebaseapp.com",
-  databaseURL:       "https://larusia-apps-default-rtdb.firebaseio.com/",
-  projectId:         "larusia-apps",
-  storageBucket:     "larusia-apps.firebasestorage.app",
-  messagingSenderId: "196879088302",
-  appId:             "1:196879088302:web:8d20d5a8cb1ea46737cb3f"
-};
-</script>
-
-<!-- ============================================================
-     APLICACION
-     ============================================================ -->
-<script>
-// ---- INICIALIZAR FIREBASE ----
-firebase.initializeApp(FIREBASE_CONFIG);
+const FIREBASE_CONFIG = {};
 const DB = firebase.database();
 
 // ---- DATOS POR DEFECTO ----
 const DEFAULT_USERS = {
   admin:           { pass:'admin123',  role:'admin',      name:'Administrador',       local:null },
   genesis:         { pass:'1234',      role:'encargado',  name:'Genesis',             local:'gabriel' },
-  recep_larrain:   { pass:'1234',      role:'receptor',   name:'Recepción Larraín',   local:'larrain' },
-  recep_abuelo:    { pass:'1234',      role:'receptor',   name:'Recepción Abuelo',    local:'abuelo' },
-  recep_pasteleria:{ pass:'1234',      role:'receptor',   name:'Recepción Pastelería',local:'pasteleria' },
+  recep_larrain:   { pass:'1234',      role:'receptor',   name:'RecepciÃ³n LarraÃ­n',   local:'larrain' },
+  recep_abuelo:    { pass:'1234',      role:'receptor',   name:'RecepciÃ³n Abuelo',    local:'abuelo' },
+  recep_pasteleria:{ pass:'1234',      role:'receptor',   name:'RecepciÃ³n PastelerÃ­a',local:'pasteleria' },
   dilan:           { pass:'1234',      role:'conductor',  name:'Dilan',               local:null },
   lorrain:         { pass:'1234',      role:'conductor',  name:'Lorrain',             local:null },
 };
 const DEFAULT_LOCALES = {
-  gabriel:'Gabriel', larrain:'Larraín', abuelo:'Abuelo', pasteleria:'Pastelería', central:'Central'
+  gabriel:'Gabriel', larrain:'LarraÃ­n', abuelo:'Abuelo', pasteleria:'PastelerÃ­a', central:'Central'
 };
 const DEFAULT_PRODUCTOS = [
   'Pino','Mechada','Chapa Trad','Chapa Napo',
@@ -327,7 +316,7 @@ let currentEnvioId = null;
 let listenersActive = false;
 
 // ---- HELPERS ----
-const roleLabel = r => ({admin:'Admin',encargado:'Envío',conductor:'Conductor',receptor:'Recepción'}[r]||r);
+const roleLabel = r => ({admin:'Admin',encargado:'EnvÃ­o',conductor:'Conductor',receptor:'RecepciÃ³n'}[r]||r);
 const fmt = ts => new Date(ts).toLocaleString('es-CL');
 const fmtDate = ts => new Date(ts).toLocaleDateString('es-CL');
 const fmtTime = ts => new Date(ts).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
@@ -376,13 +365,13 @@ window.addEventListener('load', async () => {
   loadEmailConfig();
   checkReporteDiario();
 
-  // Restaurar sesión
+  // Restaurar sesiÃ³n
   const saved = sessionStorage.getItem('ricopan_cu');
   if (saved) {
     CU = JSON.parse(saved);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
-    document.getElementById('hdr-user').textContent = CU.name + ' · ' + roleLabel(CU.role);
+    document.getElementById('hdr-user').textContent = CU.name + ' Â· ' + roleLabel(CU.role);
     goTo('dashboard');
   } else {
     document.getElementById('login-screen').style.display = 'flex';
@@ -402,10 +391,10 @@ function doLogin() {
     err.style.display = 'none';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
-    document.getElementById('hdr-user').textContent = CU.name + ' · ' + roleLabel(CU.role);
+    document.getElementById('hdr-user').textContent = CU.name + ' Â· ' + roleLabel(CU.role);
     goTo('dashboard');
   } else {
-    err.textContent = 'Usuario o contraseña incorrectos';
+    err.textContent = 'Usuario o contraseÃ±a incorrectos';
     err.style.display = 'block';
   }
 }
@@ -438,11 +427,11 @@ function goTo(page) {
 // ---- STATUS ----
 function badge(status) {
   const map = {
-    pendiente_retiro:'<span class="badge b-pendiente">⏳ Pend. retiro</span>',
-    en_transito:     '<span class="badge b-transito">🚚 En tránsito</span>',
-    entregado:       '<span class="badge b-entregado">📦 Entregado</span>',
-    completado:      '<span class="badge b-completado">✅ Completado</span>',
-    reclamado:       '<span class="badge b-reclamado">⚠️ Reclamado</span>',
+    pendiente_retiro:'<span class="badge b-pendiente">â³ Pend. retiro</span>',
+    en_transito:     '<span class="badge b-transito">ð En trÃ¡nsito</span>',
+    entregado:       '<span class="badge b-entregado">ð¦ Entregado</span>',
+    completado:      '<span class="badge b-completado">â Completado</span>',
+    reclamado:       '<span class="badge b-reclamado">â ï¸ Reclamado</span>',
   };
   return map[status]||`<span class="badge">${status}</span>`;
 }
@@ -459,8 +448,8 @@ function envioCard(id, e) {
   <div class="envio-item" onclick="verEnvio('${id}')">
     <div class="envio-head">
       <div>
-        <div class="envio-ruta">${origen} → ${destino}</div>
-        <div class="envio-sub">${fmtDate(e.createdAt)} ${fmtTime(e.createdAt)} · ${driver?.name||'?'} · ${total} unid.</div>
+        <div class="envio-ruta">${origen} â ${destino}</div>
+        <div class="envio-sub">${fmtDate(e.createdAt)} ${fmtTime(e.createdAt)} Â· ${driver?.name||'?'} Â· ${total} unid.</div>
         <div class="envio-sub">#${id.slice(-5).toUpperCase()}</div>
       </div>
       ${badge(e.status)}
@@ -479,7 +468,7 @@ function descargarReporte(tipo) {
   let enviosFiltrados = Object.entries(DATA.envios).filter(([,e])=> e.createdAt>=inicio && e.createdAt<=fin);
   const localNombre = localId ? (DATA.locales[localId]||localId) : 'Todos los locales';
   if (localId) enviosFiltrados = enviosFiltrados.filter(([,e])=> e.senderLocal===localId || e.destinoLocal===localId);
-  if (!enviosFiltrados.length) { alert('No hay envíos para esa fecha/local'); return; }
+  if (!enviosFiltrados.length) { alert('No hay envÃ­os para esa fecha/local'); return; }
   if (tipo === 'pdf') {
     const doc = generarPDFReporte(fecha, localId||'todos', localNombre, enviosFiltrados);
     doc.save('reporte_'+fecha+'_'+(localId||'todos')+'.pdf');
@@ -516,20 +505,20 @@ function dashEncargado(envios) {
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
     <div>
-      <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Mis Envíos</div>
+      <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Mis EnvÃ­os</div>
       <div style="font-size:.78rem;color:#888">Local: ${DATA.locales[CU.local]||CU.local}</div>
     </div>
-    <button class="btn btn-primary" onclick="goTo('nuevo')">+ Nuevo Envío</button>
+    <button class="btn btn-primary" onclick="goTo('nuevo')">+ Nuevo EnvÃ­o</button>
   </div>
   <div class="stats">
     <div class="stat"><b>${c('pendiente_retiro')}</b><span>Pend. retiro</span></div>
-    <div class="stat"><b>${c('en_transito')}</b><span>En tránsito</span></div>
+    <div class="stat"><b>${c('en_transito')}</b><span>En trÃ¡nsito</span></div>
     <div class="stat"><b>${c('completado')}</b><span>Completados</span></div>
     <div class="stat"><b style="color:#e74c3c">${c('reclamado')}</b><span>Reclamados</span></div>
   </div>
   <div class="card">
-    <div class="card-head"><span class="card-title">Envíos activos</span></div>
-    ${act.length ? act.map(([id,e])=>envioCard(id,e)).join('') : '<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos activos</p></div>'}
+    <div class="card-head"><span class="card-title">EnvÃ­os activos</span></div>
+    ${act.length ? act.map(([id,e])=>envioCard(id,e)).join('') : '<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os activos</p></div>'}
   </div>
   ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
 }
@@ -540,15 +529,15 @@ function dashConductor(envios) {
   const transito  = mine.filter(([,e])=>e.status==='en_transito');
   const hist      = mine.filter(([,e])=>['completado','entregado','reclamado'].includes(e.status)).slice(0,10);
   return `
-  <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">🚚 Panel Conductor</div>
+  <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e;margin-bottom:.85rem">ð Panel Conductor</div>
   <div class="stats" style="grid-template-columns:repeat(3,1fr)">
     <div class="stat"><b style="color:#f39c12">${retirar.length}</b><span>Por retirar</span></div>
-    <div class="stat"><b style="color:#3498db">${transito.length}</b><span>En tránsito</span></div>
+    <div class="stat"><b style="color:#3498db">${transito.length}</b><span>En trÃ¡nsito</span></div>
     <div class="stat"><b>${mine.filter(([,e])=>e.status==='completado').length}</b><span>Completados</span></div>
   </div>
-  ${retirar.length ? `<div class="card"><div class="card-head"><span class="card-title">⏳ Por retirar</span></div>${retirar.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${transito.length ? `<div class="card"><div class="card-head"><span class="card-title">🚚 En tránsito</span></div>${transito.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${!retirar.length&&!transito.length ? '<div class="alert alert-ok">✅ Sin envíos pendientes. ¡Todo al día!</div>' : ''}
+  ${retirar.length ? `<div class="card"><div class="card-head"><span class="card-title">â³ Por retirar</span></div>${retirar.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${transito.length ? `<div class="card"><div class="card-head"><span class="card-title">ð En trÃ¡nsito</span></div>${transito.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${!retirar.length&&!transito.length ? '<div class="alert alert-ok">â Sin envÃ­os pendientes. Â¡Todo al dÃ­a!</div>' : ''}
   ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
 }
 
@@ -559,7 +548,7 @@ function dashReceptor(envios) {
   const hist   = mine.filter(([,e])=>['completado','reclamado'].includes(e.status)).slice(0,15);
   return `
   <div>
-    <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">📥 Recepción</div>
+    <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">ð¥ RecepciÃ³n</div>
     <div style="font-size:.78rem;color:#888;margin-bottom:.85rem">Local: ${DATA.locales[CU.local]||CU.local}</div>
   </div>
   <div class="stats" style="grid-template-columns:repeat(3,1fr)">
@@ -567,9 +556,9 @@ function dashReceptor(envios) {
     <div class="stat"><b style="color:#3498db">${camino.length}</b><span>En camino</span></div>
     <div class="stat"><b>${mine.filter(([,e])=>e.status==='completado').length}</b><span>Recibidos</span></div>
   </div>
-  ${conf.length ? `<div class="alert alert-warn">📦 ${conf.length} envío(s) esperando tu confirmación</div><div class="card"><div class="card-head"><span class="card-title">📦 Por confirmar</span></div>${conf.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${camino.length ? `<div class="card"><div class="card-head"><span class="card-title">🚚 En camino</span></div>${camino.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
-  ${!conf.length&&!camino.length ? '<div class="alert alert-ok">✅ Sin envíos pendientes</div>' : ''}
+  ${conf.length ? `<div class="alert alert-warn">ð¦ ${conf.length} envÃ­o(s) esperando tu confirmaciÃ³n</div><div class="card"><div class="card-head"><span class="card-title">ð¦ Por confirmar</span></div>${conf.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${camino.length ? `<div class="card"><div class="card-head"><span class="card-title">ð En camino</span></div>${camino.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${!conf.length&&!camino.length ? '<div class="alert alert-ok">â Sin envÃ­os pendientes</div>' : ''}
   ${hist.length ? `<div class="card"><div class="card-head"><span class="card-title">Historial reciente</span></div>${hist.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}`;
 }
 
@@ -579,7 +568,7 @@ function dashAdmin(envios) {
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
     <div style="font-size:1.15rem;font-weight:700;color:#1a1a2e">Panel Admin</div>
-    <button class="btn btn-outline btn-sm" onclick="goTo('admin')">⚙️ Config</button>
+    <button class="btn btn-outline btn-sm" onclick="goTo('admin')">âï¸ Config</button>
   </div>
   <div class="stats">
     <div class="stat"><b>${envios.length}</b><span>Total</span></div>
@@ -587,10 +576,10 @@ function dashAdmin(envios) {
     <div class="stat"><b>${envios.filter(([,e])=>e.status==='completado').length}</b><span>Completados</span></div>
     <div class="stat"><b style="color:#e74c3c">${recl.length}</b><span>Reclamados</span></div>
   </div>
-  ${recl.length ? `<div class="alert alert-err">⚠️ ${recl.length} envío(s) con reclamos</div><div class="card"><div class="card-head"><span class="card-title">⚠️ Reclamados</span></div>${recl.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
+  ${recl.length ? `<div class="alert alert-err">â ï¸ ${recl.length} envÃ­o(s) con reclamos</div><div class="card"><div class="card-head"><span class="card-title">â ï¸ Reclamados</span></div>${recl.map(([id,e])=>envioCard(id,e)).join('')}</div>` : ''}
   <div class="card">
-    <div class="card-head"><span class="card-title">Todos los envíos recientes</span></div>
-    ${envios.slice(0,30).map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos registrados</p></div>'}
+    <div class="card-head"><span class="card-title">Todos los envÃ­os recientes</span></div>
+    ${envios.slice(0,30).map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os registrados</p></div>'}
   </div>`;
 }
 
@@ -626,7 +615,7 @@ function addProdRow() {
   div.innerHTML = `
     <select id="pn-${id}"><option value="">Producto...</option>${opts}</select>
     <input type="number" id="pq-${id}" placeholder="Cantidad" min="1">
-    <button class="btn-del" onclick="document.getElementById('pr-${id}').remove()">✕</button>`;
+    <button class="btn-del" onclick="document.getElementById('pr-${id}').remove()">â</button>`;
   document.getElementById('prods-list').appendChild(div);
 }
 
@@ -651,12 +640,12 @@ async function crearEnvio() {
     senderLocal: CU.local, senderUserId: CU.id, senderUserName: CU.name,
     destinoLocal: destino, driverId: conductor,
     products, nota, status:'pendiente_retiro', createdAt: now,
-    timeline:[{ action:'creado', userId:CU.id, userName:CU.name, timestamp:now, note:`Envío creado por ${CU.name}` }]
+    timeline:[{ action:'creado', userId:CU.id, userName:CU.name, timestamp:now, note:`EnvÃ­o creado por ${CU.name}` }]
   };
 
   try {
     await DB.ref('ricopan/envios').push(envio);
-    alert('✅ Envío creado exitosamente');
+    alert('â EnvÃ­o creado exitosamente');
     goTo('dashboard');
   } catch(e) { alert('Error: '+e.message); }
 }
@@ -685,54 +674,54 @@ function verEnvio(id) {
       </div>
     </div>`).join('');
 
-  // Botón de acción según rol y estado
+  // BotÃ³n de acciÃ³n segÃºn rol y estado
   let actionHTML = '';
   if (CU.role==='conductor' && CU.id===e.driverId) {
     if (e.status==='pendiente_retiro') {
       actionHTML = `<div class="action-box">
-        <h3>✋ Confirmar Retiro en ${origen}</h3>
+        <h3>â Confirmar Retiro en ${origen}</h3>
         <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que retiraste los productos:</p>
-        <textarea id="act-nota" placeholder="Observación (opcional)..."></textarea>
+        <textarea id="act-nota" placeholder="ObservaciÃ³n (opcional)..."></textarea>
         <label class="foto-btn" id="foto-lbl" onclick="document.getElementById('act-foto').click()">
-          📷 Adjuntar foto (opcional)
+          ð· Adjuntar foto (opcional)
           <input type="file" id="act-foto" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
         </label>
         <img id="foto-preview" class="foto-preview" alt="Vista previa">
-        <button class="btn btn-warning btn-full" style="margin-top:.6rem" onclick="accion('retiro','${id}')">✅ Confirmé el retiro</button>
+        <button class="btn btn-warning btn-full" style="margin-top:.6rem" onclick="accion('retiro','${id}')">â ConfirmÃ© el retiro</button>
       </div>`;
     } else if (e.status==='en_transito') {
       actionHTML = `<div class="action-box">
-        <h3>🏠 Confirmar Entrega en ${destino}</h3>
+        <h3>ð  Confirmar Entrega en ${destino}</h3>
         <p style="font-size:.82rem;color:#555;margin-bottom:.6rem">Confirma que entregaste los productos:</p>
-        <textarea id="act-nota" placeholder="Observación (opcional)..."></textarea>
+        <textarea id="act-nota" placeholder="ObservaciÃ³n (opcional)..."></textarea>
         <label class="foto-btn" onclick="document.getElementById('act-foto').click()">
-          📷 Adjuntar foto (opcional)
+          ð· Adjuntar foto (opcional)
           <input type="file" id="act-foto" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
         </label>
         <img id="foto-preview" class="foto-preview" alt="Vista previa">
-        <button class="btn btn-primary btn-full" style="margin-top:.6rem" onclick="accion('entrega','${id}')">✅ Confirmé la entrega</button>
+        <button class="btn btn-primary btn-full" style="margin-top:.6rem" onclick="accion('entrega','${id}')">â ConfirmÃ© la entrega</button>
       </div>`;
     }
   }
   if (CU.role==='receptor' && CU.local===e.destinoLocal && e.status==='entregado') {
     actionHTML = `<div class="action-box">
-      <h3>📋 Confirmar Recepción</h3>
+      <h3>ð Confirmar RecepciÃ³n</h3>
       <div style="margin-bottom:.65rem">
-        <div class="radio-opt"><input type="radio" name="re" id="re-ok" value="completado" checked><label for="re-ok" style="color:#27ae60">✅ Todo correcto</label></div>
-        <div class="radio-opt"><input type="radio" name="re" id="re-mal" value="reclamado"><label for="re-mal" style="color:#e74c3c">⚠️ Hay un problema</label></div>
+        <div class="radio-opt"><input type="radio" name="re" id="re-ok" value="completado" checked><label for="re-ok" style="color:#27ae60">â Todo correcto</label></div>
+        <div class="radio-opt"><input type="radio" name="re" id="re-mal" value="reclamado"><label for="re-mal" style="color:#e74c3c">â ï¸ Hay un problema</label></div>
       </div>
-      <textarea id="act-nota" placeholder="Detalle de recepción o descripción del problema..."></textarea>
+      <textarea id="act-nota" placeholder="Detalle de recepciÃ³n o descripciÃ³n del problema..."></textarea>
       <label class="foto-btn" onclick="document.getElementById('act-foto').click()">
-        📷 Adjuntar foto evidencia (opcional)
+        ð· Adjuntar foto evidencia (opcional)
         <input type="file" id="act-foto" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
       </label>
       <img id="foto-preview" class="foto-preview" alt="Vista previa">
-      <button class="btn btn-success btn-full" style="margin-top:.6rem" onclick="accion('recepcion','${id}')">✅ Confirmar Recepción</button>
+      <button class="btn btn-success btn-full" style="margin-top:.6rem" onclick="accion('recepcion','${id}')">â Confirmar RecepciÃ³n</button>
     </div>`;
   }
   if (CU.role==='admin') {
     actionHTML += `<div style="margin-top:.75rem">
-      <button class="btn btn-danger btn-sm" onclick="eliminarEnvio('${id}')">🗑️ Eliminar envío</button>
+      <button class="btn btn-danger btn-sm" onclick="eliminarEnvio('${id}')">ðï¸ Eliminar envÃ­o</button>
     </div>`;
   }
 
@@ -740,8 +729,8 @@ function verEnvio(id) {
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem">
       <div>
-        <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e">${origen} → ${destino}</div>
-        <div style="font-size:.75rem;color:#888">Creado: ${fmt(e.createdAt)} · #${id.slice(-6).toUpperCase()}</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#1a1a2e">${origen} â ${destino}</div>
+        <div style="font-size:.75rem;color:#888">Creado: ${fmt(e.createdAt)} Â· #${id.slice(-6).toUpperCase()}</div>
       </div>
       ${badge(e.status)}
     </div>
@@ -749,7 +738,7 @@ function verEnvio(id) {
       <div><div style="font-size:.75rem;color:#888">Conductor</div><div style="font-weight:700">${driver?.name||e.driverId}</div></div>
       <div><div style="font-size:.75rem;color:#888">Enviado por</div><div style="font-weight:700">${e.senderUserName||e.senderUserId}</div></div>
     </div>
-    ${e.nota?`<div class="alert alert-info" style="margin-bottom:.85rem">📝 ${e.nota}</div>`:''}
+    ${e.nota?`<div class="alert alert-info" style="margin-bottom:.85rem">ð ${e.nota}</div>`:''}
     <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.55rem;text-transform:uppercase">Productos</div>
     <table class="prod-table">
       <thead><tr><th>Producto</th><th>Cantidad</th></tr></thead>
@@ -759,7 +748,7 @@ function verEnvio(id) {
     ${actionHTML}
   </div>
   <div class="card">
-    <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.75rem;text-transform:uppercase">📋 Historial</div>
+    <div style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:.75rem;text-transform:uppercase">ð Historial</div>
     ${tlHTML||'<p style="color:#aaa;font-size:.85rem">Sin historial</p>'}
   </div>`;
   goTo('detalle');
@@ -774,7 +763,7 @@ function previsualizarFoto(input) {
   reader.onload = e => {
     preview.src = e.target.result;
     preview.style.display = 'block';
-    if (lbl) lbl.textContent = '✅ Foto adjuntada (toca para cambiar)';
+    if (lbl) lbl.textContent = 'â Foto adjuntada (toca para cambiar)';
   };
   reader.readAsDataURL(input.files[0]);
 }
@@ -824,13 +813,13 @@ async function accion(tipo, id) {
 
   if (tipo==='retiro') {
     newStatus = 'en_transito';
-    tlNote = nota || 'Conductor confirmó el retiro';
+    tlNote = nota || 'Conductor confirmÃ³ el retiro';
   } else if (tipo==='entrega') {
     newStatus = 'entregado';
-    tlNote = nota || 'Conductor confirmó la entrega';
+    tlNote = nota || 'Conductor confirmÃ³ la entrega';
   } else if (tipo==='recepcion') {
     newStatus = document.querySelector('input[name="re"]:checked')?.value || 'completado';
-    tlNote = nota || (newStatus==='completado' ? 'Recepción confirmada' : 'Reclamo registrado');
+    tlNote = nota || (newStatus==='completado' ? 'RecepciÃ³n confirmada' : 'Reclamo registrado');
   }
 
   const tlEntry = { action: tipo, userId: CU.id, userName: CU.name, timestamp: now, note: tlNote };
@@ -847,7 +836,7 @@ async function accion(tipo, id) {
 }
 
 async function eliminarEnvio(id) {
-  if (!confirm('¿Eliminar este envío? No se puede deshacer.')) return;
+  if (!confirm('Â¿Eliminar este envÃ­o? No se puede deshacer.')) return;
   await DB.ref(`ricopan/envios/${id}`).remove();
   goTo('dashboard');
 }
@@ -876,11 +865,11 @@ function adminTab(tab, el) {
         <div class="form-row" style="gap:.5rem">
           <div class="field"><label>Nombre</label><input id="nu-n" placeholder="Nombre completo"></div>
           <div class="field"><label>Usuario (login)</label><input id="nu-u" placeholder="sin espacios"></div>
-          <div class="field"><label>Contraseña</label><input id="nu-p" placeholder="Contraseña"></div>
+          <div class="field"><label>ContraseÃ±a</label><input id="nu-p" placeholder="ContraseÃ±a"></div>
           <div class="field"><label>Rol</label>
             <select id="nu-r" onchange="document.getElementById('nu-l-w').style.display=(['encargado','receptor'].includes(this.value)?'':'none')">
               <option value="">Selecciona...</option>
-              <option value="encargado">Encargado Envío</option>
+              <option value="encargado">Encargado EnvÃ­o</option>
               <option value="conductor">Conductor</option>
               <option value="receptor">Receptor</option>
               <option value="admin">Admin</option>
@@ -895,7 +884,7 @@ function adminTab(tab, el) {
           <button class="btn btn-outline" onclick="document.getElementById('new-u').style.display='none'">Cancelar</button>
         </div>
       </div>
-      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>Contraseña</th><th></th></tr></thead>
+      <table class="adm-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Local</th><th>ContraseÃ±a</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table>
     </div>`;
 
@@ -922,10 +911,10 @@ function adminTab(tab, el) {
   } else if (tab==='historial') {
     const all = Object.entries(DATA.envios).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
     c.innerHTML = `<div class="card">
-      <div class="card-head"><span class="card-title">Historial completo (${all.length} envíos)</span>
-        <button class="btn btn-danger btn-sm" onclick="limpiarCompletados()">🗑️ Limpiar completados</button>
+      <div class="card-head"><span class="card-title">Historial completo (${all.length} envÃ­os)</span>
+        <button class="btn btn-danger btn-sm" onclick="limpiarCompletados()">ðï¸ Limpiar completados</button>
       </div>
-      ${all.map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">📭</div><p>Sin envíos</p></div>'}
+      ${all.map(([id,e])=>envioCard(id,e)).join('')||'<div class="empty"><div class="empty-icon">ð­</div><p>Sin envÃ­os</p></div>'}
     </div>`;
   } else if (tab==='reportes') {
     renderTabReportes(c);
@@ -942,7 +931,7 @@ async function saveUser() {
   if (!n||!u||!p||!r) { alert('Completa todos los campos'); return; }
   if (DATA.users[u]) { alert('Ese usuario ya existe'); return; }
   await DB.ref(`ricopan/users/${u}`).set({ name:n, pass:p, role:r, local:l||null });
-  alert('✅ Usuario creado');
+  alert('â Usuario creado');
   adminTab('usuarios', document.querySelector('.tab-btn.on'));
 }
 async function editUser(id) {
@@ -956,14 +945,14 @@ async function editUser(id) {
   form.id = 'edit-u-form'; form.className = 'adm-form';
   form.style.cssText = 'margin-top:.5rem;border-top:2px solid #c0392b;padding-top:.75rem';
   form.innerHTML =
-    '<div style="font-size:.85rem;font-weight:700;color:#c0392b;margin-bottom:.5rem">✎ Editando: '+u.name+'</div>'+
+    '<div style="font-size:.85rem;font-weight:700;color:#c0392b;margin-bottom:.5rem">â Editando: '+u.name+'</div>'+
     '<div class="form-row" style="gap:.5rem">'+
     '<div class="field"><label>Nombre</label><input id="eu-n" value="'+u.name+'"></div>'+
-    '<div class="field"><label>Contraseña</label><input id="eu-p" value="'+u.pass+'"></div>'+
+    '<div class="field"><label>ContraseÃ±a</label><input id="eu-p" value="'+u.pass+'"></div>'+
     '<div class="field"><label>Rol</label><select id="eu-r">'+rOpts+'</select></div>'+
     '<div class="field" id="eu-l-w" style="display:'+(showLocal?'':'none')+'">'+'<label>Local</label><select id="eu-l">'+lOpts+'</select></div>'+
     '</div>'+
-    '<div style="display:flex;gap:.5rem">'+'<button class="btn btn-success" onclick="updateUser(\''+id+'\')">✅ Guardar</button>'+'<button class="btn btn-outline" onclick="document.getElementById(\'edit-u-form\').remove()">Cancelar</button>'+'</div>';
+    '<div style="display:flex;gap:.5rem">'+'<button class="btn btn-success" onclick="updateUser(\''+id+'\')">â Guardar</button>'+'<button class="btn btn-outline" onclick="document.getElementById(\'edit-u-form\').remove()">Cancelar</button>'+'</div>';
   const tbl = document.querySelector('#admin-content table');
   if (tbl) tbl.parentNode.insertBefore(form, tbl); else document.querySelector('#admin-content .card').appendChild(form);
 }
@@ -975,13 +964,13 @@ async function updateUser(id) {
   const l = (lw && lw.style.display !== 'none') ? document.getElementById('eu-l').value : null;
   if (!n||!p||!r) { alert('Completa todos los campos'); return; }
   await DB.ref('ricopan/users/'+id).update({ name:n, pass:p, role:r, local:l||null });
-  alert('✅ Usuario actualizado');
+  alert('â Usuario actualizado');
   adminTab('usuarios', document.querySelector('.tab-btn.on'));
 }
 async function deleteUser(id) {
   if (id === CU.id) { alert('No puedes eliminar tu propio usuario'); return; }
   const u = DATA.users[id]; if (!u) return;
-  if (!confirm('¿Eliminar usuario "'+u.name+'"?')) return;
+  if (!confirm('Â¿Eliminar usuario "'+u.name+'"?')) return;
   await DB.ref('ricopan/users/'+id).remove();
   adminTab('usuarios', document.querySelector('.tab-btn.on'));
 }
@@ -993,7 +982,7 @@ async function addLocal() {
   adminTab('locales', document.querySelector('.tab-btn.on'));
 }
 async function delLocal(id) {
-  if (!confirm(`¿Eliminar local "${DATA.locales[id]}"?`)) return;
+  if (!confirm(`Â¿Eliminar local "${DATA.locales[id]}"?`)) return;
   await DB.ref(`ricopan/locales/${id}`).remove();
 }
 async function addProducto() {
@@ -1019,7 +1008,7 @@ async function editProducto(i) {
   adminTab('productos', document.querySelector('.tab-btn.on'));
 }
 async function limpiarCompletados() {
-  if (!confirm('¿Eliminar todos los envíos completados?')) return;
+  if (!confirm('Â¿Eliminar todos los envÃ­os completados?')) return;
   const updates = {};
   Object.entries(DATA.envios).forEach(([id,e]) => {
     if (e.status==='completado') updates[`ricopan/envios/${id}`] = null;
@@ -1051,7 +1040,7 @@ async function saveEmailConfig() {
   await DB.ref('ricopan/config/emailjs').set(cfg);
   EJSCONFIG = cfg;
   emailjs.init(pk);
-  alert('✅ Configuración guardada');
+  alert('â ConfiguraciÃ³n guardada');
 }
 
 // ---- ALERTA DE DIFERENCIA ----
@@ -1072,11 +1061,11 @@ async function enviarAlertaDiferencia(envioId, envio, nota) {
       destino,
       conductor:   DATA.users[envio.driverId]?.name || envio.driverId,
       productos,
-      observacion: nota || '(sin observación)',
+      observacion: nota || '(sin observaciÃ³n)',
       fecha:       fmt(Date.now()),
       reportado_por: CU.name
     });
-    console.log('✅ Alerta de diferencia enviada');
+    console.log('â Alerta de diferencia enviada');
   } catch(err) { console.error('Error enviando alerta:', err); }
 }
 
@@ -1099,7 +1088,7 @@ function generarPDFReporte(fecha, localId, localNombre, envios) {
   doc.rect(0,0,210,18,'F');
   doc.setTextColor(255,255,255);
   doc.setFontSize(13);
-  doc.text('Control de Envíos - Ricopan', 10, 12);
+  doc.text('Control de EnvÃ­os - Ricopan', 10, 12);
   doc.setFontSize(9);
   doc.text(`Reporte diario: ${localNombre}  |  ${fecha}`, 10, 16);
 
@@ -1140,12 +1129,12 @@ function generarPDFReporte(fecha, localId, localNombre, envios) {
   const reclamados = envios.filter(([,e])=>e.status==='reclamado');
   if (reclamados.length) {
     doc.setFontSize(10); doc.setFont(undefined,'bold');
-    doc.text('⚠️ Envíos con reclamo:', 10, doc.lastAutoTable.finalY+10);
+    doc.text('â ï¸ EnvÃ­os con reclamo:', 10, doc.lastAutoTable.finalY+10);
     doc.setFont(undefined,'normal'); doc.setFontSize(8);
     let ry = doc.lastAutoTable.finalY+18;
     reclamados.forEach(([id,e]) => {
       const lastNote = [...(e.timeline||[])].reverse().find(t=>t.note)?.note || '-';
-      doc.text(`• #${id.slice(-6).toUpperCase()}: ${lastNote}`, 14, ry);
+      doc.text(`â¢ #${id.slice(-6).toUpperCase()}: ${lastNote}`, 14, ry);
       ry += 6;
     });
   }
@@ -1165,7 +1154,7 @@ function generarExcelReporte(fecha, localId, localNombre, envios) {
     'Productos':   (e.products||[]).map(p=>`${p.producto}(${p.cantidad})`).join(', '),
     'Unidades':    (e.products||[]).reduce((s,p)=>s+(+p.cantidad||0),0),
     'Estado':      e.status,
-    'Observación': [...(e.timeline||[])].reverse().find(t=>t.note)?.note || ''
+    'ObservaciÃ³n': [...(e.timeline||[])].reverse().find(t=>t.note)?.note || ''
   }));
 
   const ws = XLSX.utils.json_to_sheet(rows);
@@ -1195,7 +1184,7 @@ async function enviarReportePorLocal(fecha, localId, localNombre, envios) {
       total:       envios.length,
       completados: compl,
       reclamados:  recl,
-      resumen:     envios.length ? `${envios.length} envíos: ${compl} completados, ${recl} reclamados` : 'Sin movimientos hoy',
+      resumen:     envios.length ? `${envios.length} envÃ­os: ${compl} completados, ${recl} reclamados` : 'Sin movimientos hoy',
       pdf_attachment:  pdfBase64,
       xlsx_attachment: xlsBase64
     });
@@ -1207,14 +1196,14 @@ async function reporteDiario(manual=false) {
   const fecha = new Date().toLocaleDateString('es-CL');
   const hoy   = new Date().toISOString().slice(0,10);
 
-  // Verificar si ya se envió hoy
+  // Verificar si ya se enviÃ³ hoy
   if (!manual) {
     const sentSnap = await DB.ref(`ricopan/reportes_enviados/${hoy}`).get();
     if (sentSnap.exists()) { console.log('Reporte diario ya enviado hoy'); return; }
   }
 
   const enviosHoy = getEnviosHoy();
-  if (!enviosHoy.length && !manual) { console.log('Sin envíos hoy, reporte no enviado'); return; }
+  if (!enviosHoy.length && !manual) { console.log('Sin envÃ­os hoy, reporte no enviado'); return; }
 
   const locales = DATA.locales;
   let enviados = 0;
@@ -1231,10 +1220,10 @@ async function reporteDiario(manual=false) {
 
   if (enviados > 0) {
     await DB.ref(`ricopan/reportes_enviados/${hoy}`).set({ sentAt: Date.now(), locales: enviados });
-    console.log(`✅ Reporte diario enviado para ${enviados} locales`);
-    if (manual) alert(`✅ Reporte enviado para ${enviados} local(es)`);
+    console.log(`â Reporte diario enviado para ${enviados} locales`);
+    if (manual) alert(`â Reporte enviado para ${enviados} local(es)`);
   } else if (manual) {
-    alert('⚠️ Configure EmailJS en la pestaña Reportes para enviar correos');
+    alert('â ï¸ Configure EmailJS en la pestaÃ±a Reportes para enviar correos');
   }
 }
 
@@ -1253,7 +1242,7 @@ function checkReporteDiario() {
 function renderTabReportes(c) {
   c.innerHTML = `
   <div class="card">
-    <div class="card-head"><span class="card-title">📧 Configuración EmailJS</span></div>
+    <div class="card-head"><span class="card-title">ð§ ConfiguraciÃ³n EmailJS</span></div>
     <p style="font-size:.8rem;color:#555;margin-bottom:.8rem">
       Para enviar alertas y reportes por email, configura tu cuenta en
       <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> (gratis hasta 200 emails/mes).
@@ -1279,25 +1268,25 @@ function renderTabReportes(c) {
       </div>
     </div>
     <p style="font-size:.75rem;color:#888;margin:.4rem 0 .8rem">
-      📩 Los reportes se enviarán a: <strong>${EJSCONFIG.adminEmail}</strong>
+      ð© Los reportes se enviarÃ¡n a: <strong>${EJSCONFIG.adminEmail}</strong>
     </p>
-    <button class="btn btn-primary" onclick="saveEmailConfig()">💾 Guardar configuración</button>
+    <button class="btn btn-primary" onclick="saveEmailConfig()">ð¾ Guardar configuraciÃ³n</button>
   </div>
 
   <div class="card" style="margin-top:.8rem">
-    <div class="card-head"><span class="card-title">📊 Reporte Manual</span></div>
+    <div class="card-head"><span class="card-title">ð Reporte Manual</span></div>
     <p style="font-size:.82rem;color:#555;margin-bottom:.8rem">
-      Genera y envía ahora el reporte del día para todos los locales (PDF + Excel).
+      Genera y envÃ­a ahora el reporte del dÃ­a para todos los locales (PDF + Excel).
     </p>
-    <button class="btn btn-warning btn-full" onclick="reporteDiario(true)">📤 Enviar Reporte del Día Ahora</button>
+    <button class="btn btn-warning btn-full" onclick="reporteDiario(true)">ð¤ Enviar Reporte del DÃ­a Ahora</button>
     <p style="font-size:.75rem;color:#888;margin-top:.5rem">
-      ⏰ El reporte también se enviará automáticamente a las 23:00 hrs.
+      â° El reporte tambiÃ©n se enviarÃ¡ automÃ¡ticamente a las 23:00 hrs.
     </p>
   </div>`;
   var dc = document.createElement('div');
   dc.className = 'card'; dc.style.marginTop = '.8rem';
   var lOpts = Object.entries(DATA.locales).map(function(e){return '<option value="'+e[0]+'">'+e[1]+'</option>';}).join('');
-  dc.innerHTML = '<div class="card-head"><span class="card-title">⬇️ Descargar Reporte</span></div>'    +'<p style="font-size:.82rem;color:#555;margin-bottom:.8rem">Descarga el reporte de cualquier día en PDF o Excel.</p>'    +'<div class="form-row"><div class="field"><label>Fecha</label>'    +'<input type="date" id="rep-fecha" value="'+new Date().toISOString().slice(0,10)+'"></div>'    +'<div class="field"><label>Local</label>'    +'<select id="rep-local"><option value="">— Todos —</option>'+lOpts+'</select></div></div>'    +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">'    +'<button class="btn btn-danger" onclick="descargarReporte(\'pdf\')">&#128196; Descargar PDF</button> '    +'<button class="btn btn-success" onclick="descargarReporte(\'excel\')">&#128202; Descargar Excel</button>'    +'</div>';
+  dc.innerHTML = '<div class="card-head"><span class="card-title">â¬ï¸ Descargar Reporte</span></div>'    +'<p style="font-size:.82rem;color:#555;margin-bottom:.8rem">Descarga el reporte de cualquier dÃ­a en PDF o Excel.</p>'    +'<div class="form-row"><div class="field"><label>Fecha</label>'    +'<input type="date" id="rep-fecha" value="'+new Date().toISOString().slice(0,10)+'"></div>'    +'<div class="field"><label>Local</label>'    +'<select id="rep-local"><option value="">â Todos â</option>'+lOpts+'</select></div></div>'    +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">'    +'<button class="btn btn-danger" onclick="descargarReporte(\'pdf\')">&#128196; Descargar PDF</button> '    +'<button class="btn btn-success" onclick="descargarReporte(\'excel\')">&#128202; Descargar Excel</button>'    +'</div>';
   c.appendChild(dc);
 }
 </script>
